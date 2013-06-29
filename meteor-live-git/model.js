@@ -14,17 +14,26 @@ Users = new Meteor.Collection("users");
 
 /*
  * WorkingCopy consists of:
+ * timestamp - last update from the client
  * userId - reference to the above
  * computerId - reference to the above
  * branchName - the branch
- * clientDirectory - path to the directory on user's machine
- * commitObjs
- *    - clientHash
- *    - pushedHash
- *    - commit message
- *    - diffId
+ * clientDir - path to the directory on user's machine
+ * commitIds - array of commits
  */
 WorkingCopies = new Meteor.Collection("workingCopies");
+
+/*
+ * Commits consists of:
+ * workingCopyId
+ * clientHash
+ * pushedHash
+ * commit message
+ * diffId
+ * timestamp
+ */
+Commits = new Meteor.Collection("commits");
+
 
 /*
  * Diffs consists of:
