@@ -36,6 +36,14 @@ Meteor.Router.add({
     var workingCopy = WorkingCopies.findOne(query);
     var updates = getMergeUpdates (workingCopy, clientGitData);
 
+    WorkingCopies.update({_id : workingCopy._id}, updates, function (err) {
+      if (err) {
+        return (err);
+      } else {
+        
+      }
+    });
+
   }
 
 
@@ -44,11 +52,22 @@ Meteor.Router.add({
 
 
 var getMergeUpdates = function (workingCopy, clientGitData) {
-  var updates = {$addToSet : {commitIds : []}};
-  var localHashes = workingCopy.
-  //$addToSet: { <field>: { $each: [ <value1>, <value2> ... ] }
+  var newCommits = [];
+  var updates = {
+    $addToSet : {commitIds : {$each : newCommits}}
+  };
+  var commits = Commits.find ({});
+  var hashes = _.filter (function (commit) { return commit.clientHash});
   
   clientGitData.commits.forEach (function (commit) {
-    if (commit.)
+    if (hashes.indexOf (commit.clientHash) !== -1) {
+      // create a commit
+      var commitId = Commits.inset (commit);
+      newCommits.push (commitId);
+    } else {
+      //TODO: do we need to sync these to make sure stuff hasn't changed?
+    }
   });
+
+  return updates;
 }
