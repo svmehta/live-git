@@ -1,15 +1,21 @@
 Meteor.Router.add({
+
+  '/bootstrap' : function () {
+
+  },
   
   /*
    * let client know last commit in db for a given branch
    */
   '/status': function() {
     var body = this.request.body;
+    var user = apiHelpers.getUserForComputer (body.computerId);
 
     var query = {
       computerId : body.computerId,
       branchName : body.branchName,
-      clientDir : body.clientDir
+      clientDir : body.clientDir,
+      userId : user._id
     };
 
     WorkingCopies.findOne(query,
@@ -20,54 +26,89 @@ Meteor.Router.add({
         return(err);
       }
     });
-
   },
 
   '/update' : function() {
     var body = this.request.body;
     var clientGitData = body.gitData;
+    var user = apiHelpers.getUserForComputer (body.computerId);
 
     var query = {
       computerId : body.computerId,
       branchName : body.branchName,
-      clientDir : body.clientDir
+      clientDir : body.clientDir,
+      userId : user._id
     };
 
     var workingCopy = WorkingCopies.findOne(query);
-    var updates = getMergeUpdates (workingCopy, clientGitData);
 
-    WorkingCopies.update({_id : workingCopy._id}, updates, function (err) {
-      if (err) {
-        return (err);
-      } else {
-        
-      }
-    });
-
+    if (!workingCopy) {
+      WorkingCopy.insert(query, 
+        function (err, workingCopyId) {
+          if (err) {
+            return [500, 'could not create new workingCopy'];
+          } else {
+            // log the commits
+            var updates = apiHelpers.insertNewCommits (workingCopyId, clientGitData);
+            apiHelpers.updateWorkingCopy (updates, workingCopyId, function (err) {
+              if (err) {
+                return [500, 'could not update workingCopy'];
+              } else {
+                return [200, 'new working copy created'];
+              }
+            });
+          }
+        });
+    } else {
+      var updates = apiHelpers.insertNewCommits (workingCopy._id, clientGitData);
+      apiHelpers.updateWorkingCopy (updates, workingCopyId, function (err) {
+        if (err) {
+          return [500, 'could not update workingCopy'];
+        } else {
+          return [200, 'new working copy created'];
+        }
+      });
+    }
   }
-
 
 });
 
 
+var apiHelpers = {
 
-var getMergeUpdates = function (workingCopy, clientGitData) {
-  var newCommits = [];
-  var updates = {
-    $addToSet : {commitIds : {$each : newCommits}}
-  };
-  var commits = Commits.find ({});
-  var hashes = _.filter (function (commit) { return commit.clientHash});
+  getUserForComputer : function (computerId) {
+    return Users.findOne ({computerId : computerId});
+  },
   
-  clientGitData.commits.forEach (function (commit) {
-    if (hashes.indexOf (commit.clientHash) !== -1) {
-      // create a commit
-      var commitId = Commits.inset (commit);
-      newCommits.push (commitId);
-    } else {
-      //TODO: do we need to sync these to make sure stuff hasn't changed?
-    }
-  });
+  updateWorkingCopy : function (updates, workingCopyId) {
+    WorkingCopies.update({_id : workingCopy._id}, updates, function (err) {
+      if (err) {
+        callback(err);
+      } else {
+        callback();
+      }
+    });
+  },
 
-  return updates;
+  insertNewCommits : function (workingCopyId, clientGitData) {
+    var newCommits = [];
+    var updates = {
+      $addToSet : {commitIds : {$each : newCommits}}
+    };
+
+    var commits = Commits.find ({workingCopyId : workingCopyId});
+    var hashes = _.filter (function (commit) { return commit.clientHash});
+    
+    clientGitData.commits.forEach (function (commit) {
+      if (hashes.indexOf (commit.clientHash) !== -1) {
+        var commitId = Commits.insert (commit);
+        newCommits.push (commitId);
+      } else {
+        //TODO: do we need to sync these to make sure stuff hasn't changed?
+      }
+    });
+
+    return updates;
+  }
+
 }
