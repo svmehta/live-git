@@ -1,3 +1,26 @@
+@black: #2c3e50;
+@light-grey: #ecf0f1;
+@white: #fff;
+@grey: #7f8c8d;
+@green: #4dbd86;
+@sans: 'Raleway', sans-serif;
+@serif: 'Goudy Bookletter 1911', serif;
+@dark-grey: #34495e;
+
+
+/* BOOTSTRAP HACKS */
+
+.span2 {
+	width: 100px;
+}
+
+
+/* LIVE-GIT */
+
+.update-block {
+	margin: 20px 0px 20px 0px;
+}
+
 .profile-image {
 	min-height: 100px;
 	min-width: 100px;
@@ -13,24 +36,69 @@
 	overflow: hidden;
 	border-radius: 500px;
 	display: inline-block;
+
 }
 
 body {
-	font-family: 'Goudy Bookletter 1911', serif;
+	font-family: @serif;
+	background-color: #e0e0e0;
+	color: @black;
+}
+
+.featured {
+	display: inline-block;
 }
 
 .main {
-	font-family: 'Raleway', sans-serif;
-	font-size: 30px;
-	line-height: 36px;
+	font-family: @sans;
+	font-size: 36px;
+	line-height: 42px;
+	background-color: @white;
+	padding: 15px 20px 15px 20px;
+	font-weight: 100;
 	display: inline-block;
+	float: left;
 }
 
 .time-stamp {
-	font-family: 'Goudy Bookletter 1911', serif;
 	font-size: 14px;
 	line-height: 20px;
-	color: #777;
+	color: @grey;
 	display: inline-block;
+	font-family: @serif;
 
+}
+
+.branch {
+	background-color: @green;
+	font-size: 12px;
+	padding: 10px;
+	display: block;
+	color: #fff;
+	font-family: @sans;
+	font-weight: 600; 
+	line-height: 12px;
+	display:inline-block;
+}
+
+.action-icon {
+	background-color: @dark-grey;
+	display: inline-block;
+	float: left;
+	padding: 20px;
+	height: 52px;
+	width: 52px;
+
+}
+
+.history {
+	display: block;
+}
+
+.featured {
+	display: block;
+}
+
+.icon-save {
+	background-image:url('img/icon-save.png');
 }
