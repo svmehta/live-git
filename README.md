@@ -2,13 +2,17 @@
 
 A real-time view of the Git status of your team.
 
-
-## Getting started
+## Prerequisites
 
 * [Install Meteor](http://docs.meteor.com/#quickstart): `curl https://install.meteor.com | /bin/sh`
 * [Install meteorite](https://github.com/oortcloud/meteorite#installing-meteorite): `sudo -H npm install -g meteorite`
+* [Install libgit2](https://github.com/libgit2/libgit2#building-libgit2---using-cmake): `apt-get install libgit2-dev` or `brew install libgit2`
+
+## Getting started
+
 * `git clone https://github.com/svmehta/live-git.git`
-* `cd live-git/meteor-live-git && mrt install`
+* `cd live-git/python-client && pip install -r requirements.txt`
+* `cd ../meteor-live-git && mrt install`
 * `meteor`
 
 ## EC2 deployment
