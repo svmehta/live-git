@@ -38,6 +38,12 @@ Template.main.users = function() {
 
   var userArray = [];
 
+  // TODO: total hack for demo purposes
+  var lastPushedCommit = Commits.find (
+    {repositoryId : repoId, userId : userId, invalid: true},
+    { sort : {timestamp ; -1}}
+  ).fetch();
+
   copies.forEach(function(copy) {
     copy.commits = Commits.find(
       { _id: { $in: copy.commitIds } },
@@ -50,6 +56,7 @@ Template.main.users = function() {
     userArray.push({
       "user": user,
       "workingCopy": copy,
+      "lastPushedCommit" : lastPushedCommit,
       "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
     });
 
@@ -132,6 +139,9 @@ Template.user.topItem = function() {
 
   } else if(this.workingCopy.commits.length) {
     return processCommitData(this.workingCopy.commits[0], this.workingCopy);
+
+  } else if (this.lastPushedCommit) {
+    return processCommitData(this.lastPushedCommit, this.workingCopy);
 
   } else {
     return false;
