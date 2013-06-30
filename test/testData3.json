@@ -1,5 +1,6 @@
 { 
     "computerId":"EMAxb5LT4hgi8v7En",
+    "remoteUrl" : "git@github.com:svmehta/live-git.git",
     "branchName":"master",
     "clientDir":"/home/sagar/Documents/dev/meteor/live-git",
     "untrackedFiles"  : ["duh.txt"],
