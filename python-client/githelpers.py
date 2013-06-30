@@ -59,7 +59,7 @@ def get_working_copy(params, dirpath):
     if not origin_remote:
         print "This tool requires a remote branch named 'origin'"
         sys.exit(1)
-
+    remote_url = origin_remote.url
     origin_remote.fetch()
 
     # Gather information about unpushed commits
@@ -93,6 +93,7 @@ def get_working_copy(params, dirpath):
     working_copy = {
             "computerId": params["computerId"],
             "branchName": current_branch.name,
+            "remoteUrl": remote_url,
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
             "clientDir": dirpath

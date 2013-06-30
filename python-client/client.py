@@ -18,7 +18,10 @@ def main():
     parser.add_argument("-d", dest="git_directory", default=None)
     args = parser.parse_args()
 
-    git_directory = os.path.abspath(args.git_directory) or os.getcwd()
+    if args.git_directory:
+        git_directory = os.path.abspath(args.git_directory)
+    else:
+        git_directory = os.getcwd()
 
     bootstrap_path = os.path.join(os.path.expanduser("~"), BOOTSTRAP_DOTFILE)
     # Bootstrap file: expect computerId on first line, userId on second
