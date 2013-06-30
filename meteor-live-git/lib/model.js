@@ -41,9 +41,9 @@ WorkingCopies = new Meteor.Collection("workingCopies");
  * diffs - a list of diffs
  *   content - the content of the diff (patch)
  *   filename - the filename of the target file (i.e. in a renaming, the new filename)
- *   timeSinceModified - seconds that have passed since last modified 
+ *   timeSinceModified - milliseconds that have passed since last modified 
  *                       NOT guaranteed to be present
- *   lastModified - unix time of last modification
+ *   lastModified - unix time (ms) of last modification
  *                  NOT guaranteed to be present
  *
  * timestamp
