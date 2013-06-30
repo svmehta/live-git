@@ -4,6 +4,7 @@
 
   <link href='http://fonts.googleapis.com/css?family=Raleway:400,100,600,900' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Goudy+Bookletter+1911' rel='stylesheet' type='text/css'>
+  <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
 </head>
 
 <body>{{> main}}</body>
@@ -11,16 +12,15 @@
 
 <template name="main">
   <div class="container">
-    <h1>{{repository.name}}</h1>
+    {{#with repository}}
+      <h1>{{name}}</h1>
+    {{/with}}
 
     {{#each users}}
       {{> user}}
     {{/each}}
   </div>
 
-  <!--
-<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
- -->
 </template>
 
 
@@ -29,7 +29,7 @@
     <div class="row">
       <div class="span2">
         <div class="profile-container">
-          <img src="{{gravatar}}" class="profile-image">
+          <img src="http://www.gravatar.com/avatar/{{this.gravatarHash}}" class="profile-image">
         </div>
       </div>
       <div class="span9">
