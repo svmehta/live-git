@@ -42,11 +42,12 @@ Template.main.users = function() {
     if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
 
     userArray.sort (function (a, b) {
-      console.log ("a", a)
-      console.log ("b", b)
-      if (a.commits.length && b.commits.length) {
-        return b.commits[0].timestamp - a.commits[0].timestamp;
-      } else if (a.commits.length) {
+      var wcA = a.workingCopies;
+      var wcB = b.workingCopies;
+      console.log ('wcA', wcA)
+      if (wcA.commits && wcA.commits.length && wcB.commits && wcB.commits.length) {
+        return wcA.commits[0].timestamp - wcB.commits[0].timestamp;
+      } else if (wcA.commits && wcA.commits.length) {
         return -1;
       } else {
         return 1;
