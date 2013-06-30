@@ -6,13 +6,12 @@ Scripts for retrieving data about the git repository
 from git import *
 import os, sys
 
-def get_repo():
+def get_repo(dirpath):
     """
     Validates whether the script was run in a git repository,
     then returns the pygit2 Repo object
     """
-    cwd = os.getcwd()
-    git_directory = os.path.join(os.getcwd() + "/.git/")
+    git_directory = os.path.join(dirpath + "/.git/")
 
     if not os.path.exists(git_directory):
         print "We couldn't find a .git/ directory in the current working directory. Are you in the root of the git repository?"
@@ -21,14 +20,14 @@ def get_repo():
         print "We found a file named .git/, but it should be a directory."
         sys.exit(1)
 
-    return Repo.init(cwd)
+    return Repo.init(dirpath)
 
 
-def get_computer_info():
+def get_computer_info(dirpath):
     """
     TODO
     """
-    repo = get_repo()
+    repo = get_repo(dirpath)
 
     # Read in git config
     config = repo.config_reader()
@@ -45,12 +44,11 @@ def get_computer_info():
     return computer
 
 
-def get_working_copy(params):
+def get_working_copy(params, dirpath):
     """
     Returns:
     """
-    cwd = os.getcwd()
-    repo = get_repo()
+    repo = get_repo(dirpath)
 
     # Gather branch information
     current_branch = repo.active_branch
@@ -72,7 +70,11 @@ def get_working_copy(params):
             if line.startswith("commit")]
     unpushed_objs = [repo.commit(h) for h in unpushed_hexshas]
 
-    previous_commit = unpushed_objs[-1].parents[0] # First parent commit
+    if unpushed_objs:
+        previous_commit = unpushed_objs[-1].parents[0] # First parent commit
+    else:
+        previous_commit = None
+
     unpushed_commits = []
     for u in unpushed_objs:
         unpushed_commits.append(_commit_to_dict(u, previous_commit))
@@ -93,7 +95,7 @@ def get_working_copy(params):
             "branchName": current_branch.name,
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
-            "clientDir": cwd
+            "clientDir": dirpath
     }
 
     return working_copy
