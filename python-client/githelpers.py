@@ -103,9 +103,10 @@ def get_working_copy(params, dirpath):
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
             "clientDir": dirpath,
-            "fileStats": file_stats,
-            "gitDiff": current_diffs
+            "gitDiff": current_diffs,
     }
+    for k, v in file_stats.iteritems():
+        working_copy[k] = v
 
     return working_copy
 
