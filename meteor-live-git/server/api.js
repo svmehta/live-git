@@ -75,14 +75,7 @@ Meteor.Router.add({
     if (!workingCopy) {
       query.commitIds = []; //init empty array
       query.untrackedFiles = body.untrackedFiles;
-      query.fileStats = {
-        numBehind : body.numAhead,
-        numConflicts : body.numConflicts,
-        numStaged : body.numStaged,
-        numChanged : body.numChanged,
-        numAhead : body.numAhead,
-        numUntracked : body.numUntracked
-      }
+      query.fileStats = apiHelpers.getFileStats (body);
       query.timestamp = Date.now();
       query.gitDiff = body.gitDiff;
       workingCopyId = WorkingCopies.insert(query);
@@ -91,14 +84,8 @@ Meteor.Router.add({
       var update = { 
         $set : {
           untrackedFiles : body.untrackedFiles,
-          fileStats : body.fileStats,
           timestamp : Date.now(),
-          numBehind : body.numAhead,
-          numConflicts : body.numConflicts,
-          numStaged : body.numStaged,
-          numChanged : body.numChanged,
-          numAhead : body.numAhead,
-          numUntracked : body.numUntracked,
+          fileStats : apiHelpers.getFileStats (body),
           gitDiff : body.gitDiff
         }
       };
@@ -191,6 +178,17 @@ var apiHelpers = {
     updates.removesLen = commitsToRemove.length;
 
     return updates;
+  },
+
+  getFileStats : function (body) {
+    return {
+      numBehind : body.numAhead,
+      numConflicts : body.numConflicts,
+      numStaged : body.numStaged,
+      numChanged : body.numChanged,
+      numAhead : body.numAhead,
+      numUntracked : body.numUntracked
+    }
   }
 
 }
