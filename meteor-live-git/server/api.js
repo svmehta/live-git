@@ -78,7 +78,6 @@ Meteor.Router.add({
 
     var workingCopy = WorkingCopies.findOne(query);
     var workingCopyId;
-
     if (!workingCopy) {
       query.commitIds = []; //init empty array
       query.untrackedFiles = body.untrackedFiles;
