@@ -25,12 +25,14 @@ WorkingCopies = new Meteor.Collection("workingCopies");
 
 /*
  * Commits consists of:
+ * userId
  * workingCopyId
  * clientHash
  * pushedHash
  * commit message
  * diffId
  * timestamp
+ * files
  */
 Commits = new Meteor.Collection("commits");
 
