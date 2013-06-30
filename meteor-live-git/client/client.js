@@ -1,13 +1,19 @@
 // Main template
 
 Template.main.repository = function() {
-  var repo = Repositories.findOne();
-  if (repo && !repo.name) {
-    var matches = /\/([^\/]+?)(?:.git)?$/.exec(repo.url);
-    repo.name = matches[1];
-  }
+  if (window.location.pathname.length < 2) {
+    console.log("No repository ID provided!");
+  } else {
+    var repo_id = window.location.pathname.substr(1);
 
-  return repo;
+    var repo = Repositories.findOne({_id: repo_id});
+    if (repo && !repo.name) {
+      var matches = /\/([^\/]+?)(?:.git)?$/.exec(repo.url);
+      repo.name = matches[1];
+    }
+
+    return repo;
+  }
 };
 
 
