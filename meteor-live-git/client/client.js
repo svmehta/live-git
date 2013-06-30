@@ -54,7 +54,7 @@ Template.main.users = function() {
       { sort : {timestamp : -1}}
     );
 
-    console.log (user.email().trim().toLowerCase())
+    console.log (user.email.trim().toLowerCase())
 
     userArray.push({
       "user": user,
