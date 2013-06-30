@@ -104,7 +104,7 @@ def get_working_copy(params, dirpath):
             "fileStats": file_stats,
             "gitDiff": current_diffs
     }
-    print current_diffs
+
     return working_copy
 
 def _commit_to_dict(c, previous_commit=None):
