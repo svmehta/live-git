@@ -139,6 +139,14 @@ Template.user.topItem = function() {
   }
 };
 
+Template.user.allDone = function() {
+    if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length || this.workingCopy.commits.length) {
+        return false;
+    }
+    return { message: "Probably slacking..." };
+}
+
+
 
 Template.user.olderItems = function() {
   if (!this.workingCopy) { console.log("No working copy to inspect!"); }
