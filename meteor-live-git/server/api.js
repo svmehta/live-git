@@ -60,6 +60,7 @@ Meteor.Router.add({
     var workingCopy = WorkingCopies.findOne(query);
 
     if (!workingCopy) {
+      query.commitIds = []; //init empty array
       var workingCopyId = WorkingCopies.insert(query);
       var updates = apiHelpers.insertNewCommits (workingCopyId, clientCommits);
       WorkingCopies.update({_id : workingCopyId}, updates);
@@ -93,17 +94,17 @@ var apiHelpers = {
     var commits = Commits.find ({workingCopyId : workingCopyId}).fetch();
     var hashes = _.map (commits, function (commit) { return commit.clientHash});
 
-    console.log(newCommits)
-    clientCommits.forEach (function (commit) {
-      if (hashes.indexOf (commit.clientHash) === -1) {
-        commit.workingCopyId = workingCopyId;
-        var commitId = Commits.insert (commit);
-        newCommits.push (commitId);
-      } else {
-        //TODO: do we need to sync these to make sure stuff hasn't changed?
-      }
-    });
-
+    if (clientCommits) {
+      clientCommits.forEach (function (commit) {
+        if (hashes.indexOf (commit.clientHash) === -1) {
+          commit.workingCopyId = workingCopyId;
+          var commitId = Commits.insert (commit);
+          newCommits.push (commitId);
+        } else {
+          //TODO: do we need to sync these to make sure stuff hasn't changed?
+        }
+      });
+    }
     return updates;
   }
 
