@@ -38,9 +38,7 @@ def get_info():
 
     # Branch 
     current_branch = repo.active_branch
-    current_branch_name = current_branch.name
     untracked = repo.untracked_files
-
 
     # Remotes
     raw_remotes = repo.remotes
@@ -63,19 +61,23 @@ def get_info():
             # We can take a or b for the two diffs: 
             # take b, since new files don't have an a_blob
             filename = d.b_blob.name  
-            detailed_diffs.append({"filename": filename, "content": diff.diff })
+            detailed_diffs.append({
+                "filename": filename, 
+                "content": diff.diff }
+                )
 
-        d = {
+        commit_info = {
                 "hash": c.hexsha,
                 "author": {
                     "name": c.author.name,
                     "email": c.author.email
                 },
                 "message": c.message,
-                "timestamp": c.committed_date
+                "timestamp": c.committed_date,
+                "files": changed_files
         }
 
-        commits.append(d)
+        commits.append(commit_info)
         previous_commit = c
 
     working_copy = {
