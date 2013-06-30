@@ -9,9 +9,6 @@ import os, sys
 def get_info():
     """
     Returns:
-        A single dict with keys:
-            computer
-            workingCopy
     """
 
     # Scripting part (move into main() etc functions later)
@@ -71,6 +68,7 @@ def get_info():
 
     # Information about the commits on that branch
     # Grab the commits in reverse chronological order
+    # TODO: Deprecate this when we're sure it's no longer needed
     commits = []
     previous_commit = None  # Find diff relative to previous commit
     for c in repo.iter_commits():
@@ -83,7 +81,6 @@ def get_info():
             "branchName": current_branch.name,
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
-            "commits": commits,
             "clientDir": cwd
     }
 
@@ -118,7 +115,7 @@ def commit_to_dict(c, previous_commit=None):
             )
 
     commit_info = {
-            "hash": c.hexsha,
+            "clientHash": c.hexsha,
             "author": {
                 "name": c.author.name,
                 "email": c.author.email
