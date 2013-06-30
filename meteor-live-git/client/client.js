@@ -12,7 +12,8 @@ var getUsers = function() {
     console.log(workingCopy)
     return {
       "user": user,
-      "workingCopy": workingCopy
+      "workingCopy": workingCopy,
+      "gravatarHash": CryptoJS.md5(user.email)
     };
   });
 
@@ -21,12 +22,9 @@ var getUsers = function() {
 };
 
 
-Template.main.repository = getRepository();
+Template.main.repository = getRepository;
 
-Template.main.users = getUsers();
-
-
-
+Template.main.users = getUsers;
 // Template.main.repository = { name: "My Awesome Repo" }
 //
 // Template.main.users = [
