@@ -170,7 +170,7 @@ Template.user.olderItems = function() {
   var commits = [];
   var max = first_historic_commit + 3;
 
-  if (Session.get("openCopy") == this.workingCopy._id) {
+  if (Session.equals("openCopy", this.workingCopy._id)) {
     max = this.workingCopy.commits.length;
   }
 
@@ -195,16 +195,44 @@ Template.user.hasMore = function() {
 
 
 Template.user.showOrHide = function() {
-  return (Session.get("openCopy") == this.workingCopy._id) ? "Hide" : "Show";
+  return (Session.equals("openCopy", this.workingCopy._id)) ? "Hide" : "Show";
+};
+
+
+Template.user.showingDiff = function() {
+  return (Session.equals("openDiffCopy", this.workingCopy._id));
+};
+
+
+Template.user.fileDiff = function() {
+  var output;
+  this.workingCopy.gitDiff.forEach(function(diff) {
+    if (Session.equals("openDiffFile", diff.file)) {
+      output = diff.content;
+    }
+  });
+  if (output) { return hljs.highlight("diff", output).value; }
 };
 
 
 Template.user.events({
   'click .more-text': function (evt) {
-    if (Session.get("openCopy") == this.workingCopy._id) {
+    if (Session.equals("openCopy", this.workingCopy._id)) {
       Session.set("openCopy", null);
     } else {
       Session.set("openCopy", this.workingCopy._id);
+    }
+  },
+  'click .item.file': function (evt) {
+    var rel = evt.target.getAttribute("rel");
+    if (rel) {
+      if (Session.equals("openDiffCopy", this.workingCopy._id)) {
+        Session.set("openDiffCopy", null);
+        Session.set("openDiffFile", null);
+      } else {
+        Session.set("openDiffCopy", this.workingCopy._id);
+        Session.set("openDiffFile", rel);
+      }
     }
   }
 });
