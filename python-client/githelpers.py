@@ -6,7 +6,7 @@ Scripts for retrieving data about the git repository
 from git import *
 import os, sys
 import gitstatus
-import json
+import time
 
 def get_repo(dirpath):
     """
@@ -58,7 +58,10 @@ def get_working_copy(params, dirpath):
 
     # In order to make sure that we have up to date information, we fetch
     origin_remote, remote_url = _get_remote_origin(repo)
-    origin_remote.fetch()
+    try:
+        origin_remote.fetch()
+    except Exception, e:
+        print "There was an error fetching from the remote: %s" % str(e)
 
     # Gather information about unpushed commits
     unpushed_commits = {}
@@ -94,7 +97,7 @@ def get_working_copy(params, dirpath):
     # Unstaged changes for added files (aka git diff)
     try:
         current_diffs_raw = repo.index.diff(None, create_patch=True)
-        current_diffs = _difflist_to_dictlist(current_diffs_raw)
+        current_diffs = _difflist_to_dictlist(current_diffs_raw, last_modified=True)
     except Exception as e:
         print "There was an error getting `git diff`: %s" % str(e)
         current_diffs = [] 
@@ -143,9 +146,11 @@ def _commit_to_dict(c, previous_commit=None):
     }
     return commit_info
 
-def _difflist_to_dictlist(diffs):
+def _difflist_to_dictlist(diffs, last_modified=False):
     """
     Converts a list of diffs to a list of dicts to send to the server
+
+    If last_modified is True, it will add lastModified information to the dictionary
     """
     dictlist = []
     for diff in diffs:
@@ -156,11 +161,20 @@ def _difflist_to_dictlist(diffs):
         # We can take a or b for the two diffs: 
         # take b, since new files don't have an a_blob
         filename = diff.b_blob.name  
-        dictlist.append({
+        abspath = diff.b_blob.abspath
+
+        current_dict = {
             "file": filename, 
-            "content": diff.diff 
-            }
-        )
+            "content": diff.diff,
+            "lastModified": last_modified
+        }
+
+        if last_modified and os.path.exists(abspath):
+            current_dict['lastModified'] = os.path.getmtime(abspath)
+            current_dict['timeSinceModified'] = int(time.time()) - current_dict['lastModified']
+
+
+        dictlist.append(current_dict)
     return dictlist
 
 def _get_remote_origin(repo):
