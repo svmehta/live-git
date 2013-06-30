@@ -136,6 +136,10 @@ body {
 	line-height: 12px;
 	display:inline-block;
 	margin-left: -5px;
+        &.all-done-message {
+            background-color: darken(@green, 20%);
+        }
+    
 }
 
 .action-icon {
@@ -173,6 +177,17 @@ body {
 	width: 100%;
 
 }
+
+.file-diff {
+  clear: both;
+  padding: 15px 0;
+
+  div {
+    max-height: 350px;
+    overflow: auto;
+  }
+}
+
 
 .save {
 	background-image:url('../img/icon-save.png');
