@@ -132,8 +132,6 @@ Template.user.uncommittedFiles = function() {
 
 
 Template.user.topItem = function() {
-  console.log(this.lastPushedCommit);
-
   if (!this.workingCopy) { console.log("No working copy to inspect!"); }
 
   if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length) {
@@ -144,7 +142,6 @@ Template.user.topItem = function() {
 
   } else if (this.lastPushedCommit) {
     return processCommitData(this.lastPushedCommit, this.workingCopy, true);
-
   } else {
     return false;
   }
