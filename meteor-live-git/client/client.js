@@ -102,6 +102,7 @@ Template.user.uncommittedFiles = function() {
   var wc_timeago = moment(this.workingCopy.timestamp).fromNow();
   var result = {
     files: [],
+    copy_id: this.workingCopy._id,
     numBehind: this.workingCopy.fileStats.numBehind,
     branchStyle: this.workingCopy.fileStats.numBehind > 0 ? "behind" : "",
     branchName: this.workingCopy.branchName,
@@ -111,6 +112,7 @@ Template.user.uncommittedFiles = function() {
   if (this.workingCopy.gitDiff.length) {
     this.workingCopy.gitDiff.forEach(function(file) {
       file.timeago = moment(file.lastModified).fromNow();  // Last modified
+      file.copy_id = result.copy_id;  // hack for diff click hander below
       result.files.push(file);
     });
     result.firstFile = result.files.shift();
@@ -222,15 +224,20 @@ Template.user.events({
     } else {
       Session.set("openCopy", this.workingCopy._id);
     }
-  },
-  'click .item.file': function (evt) {
+  }
+});
+
+Template['new-files-row'].events({
+  'click .file': function (evt) {
     var rel = evt.target.getAttribute("rel");
+    if (!rel) { rel = evt.target.parentElement.getAttribute("rel"); }
     if (rel) {
-      if (Session.equals("openDiffCopy", this.workingCopy._id)) {
+      if (Session.equals("openDiffCopy", this.copy_id) && Session.equals("openDiffFile", rel)) {
         Session.set("openDiffCopy", null);
         Session.set("openDiffFile", null);
       } else {
-        Session.set("openDiffCopy", this.workingCopy._id);
+      console.log(this.copy_id, rel)
+        Session.set("openDiffCopy", this.copy_id);
         Session.set("openDiffFile", rel);
       }
     }
