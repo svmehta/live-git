@@ -41,6 +41,18 @@ Template.main.users = function() {
     var user = Users.findOne({ _id: copy.userId })
     if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
 
+    userArray.sort (function (a, b) {
+      console.log ("a", a)
+      console.log ("b", b)
+      if (a.commits.length && b.commits.length) {
+        return b.commits[0].timestamp - a.commits[0].timestamp;
+      } else if (a.commits.length) {
+        return -1;
+      } else {
+        return 1;
+      }
+    })
+
     userArray.push({
       "user": user,
       "workingCopy": copy,
@@ -126,6 +138,7 @@ Template.user.olderItems = function() {
 
   var commits = [];
 
+    // This doesn't work in the case of untrackedFiles, since we don't keep old coomit history
   for (var i = first_historic_commit; i < first_historic_commit + 3; i ++) {
     if (this.workingCopy.commits[i]) {
       var commit = processCommitData(this.workingCopy.commits[i], this.workingCopy);
