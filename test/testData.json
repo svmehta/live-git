@@ -1,0 +1,30 @@
+{ 
+  "workingCopy" : {
+    "computerId":"YFXHhgCsv5foJzPSQ",
+    "branchName":"master",
+    "clientDir":"/home/sagar/Documents/dev/meteor/live-git",
+    "untrackedFiles"  : ["duh.txt"],
+    "unpushedCommits" : [
+      {
+        "files" : ["hello.txt", "hello2.txt"],
+        "clientHash" : "spodif098s09f3ja",
+        "author" : {
+          "name" : "Sagar Mehta",
+          "email" : "sagar@mikeyteam.com"
+        },
+        "message" : "my commit message",
+        "timestamp" : 1372565197,
+         "diff" : [
+           {
+             "file" : "hello.txt",
+             "content" : "some diff content"
+           },
+           {
+             "file" : "hello2.txt",
+             "content" : "some different content"
+           }
+         ]
+      }
+    ]
+  }
+}
