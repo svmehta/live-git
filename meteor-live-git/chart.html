@@ -1,21 +1,9 @@
-<template name="branch-chart">
-  <div class="branch-drawing">
-    <div class="start-square commit">
-    </div>
-
-    <div class="square">
-    </div>
-
-    <div class="circle">
-    </div>
-    <div class="circle new-commit">
-    </div>
-    <div class="circle new-push">
-    </div>
-    <div class="circle new-push last">
-    </div>
-    <div class="circle current">
-    </div>
-
+<template name="branchChart">
+  <div class="branch-chart">
+    <div class="red-line">{{{commitsBehind}}}</div>
+    {{#if hasCommitsAhead}}
+      <div class="square-corner"></div>
+      <div class="blue-line">{{{commitsAhead}}}</div>
+    {{/if}}
   </div>
 </template>
