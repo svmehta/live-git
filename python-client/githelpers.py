@@ -120,8 +120,9 @@ def _commit_to_dict(c, previous_commit=None):
         filename = d.b_blob.name  
         detailed_diffs.append({
             "file": filename, 
-            "content": diff.diff }
-            )
+            "content": diff.diff 
+            }
+        )
 
     commit_info = {
             "clientHash": c.hexsha,
