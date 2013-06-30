@@ -49,8 +49,6 @@ Meteor.Router.add({
     var body = this.request.body;
     var unpushedCommits = body.unpushedCommits;
 
-    console.log(body)
-
     if (!body.computerId) {
       return [400, 'computerId not defined'];
     } else if (!body.remoteUrl) {
