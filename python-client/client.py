@@ -27,7 +27,7 @@ def main():
 
     # Bootstrap file: expect computerId on first line, userId on second
     if not os.path.exists(bootstrap_path):
-        user_info = githelpers.get_computer_info(git_directory)["user"]
+        user_info = githelpers.get_computer_info(git_directory)
         print user_info
         resp = _query_endpoint("bootstrap", user_info).json()
         userId, computerId = resp["userId"], resp["computerId"]
