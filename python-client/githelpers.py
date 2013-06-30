@@ -33,12 +33,12 @@ def get_computer_info(dirpath):
     config = repo.config_reader()
     user_name = config.get_value("user", "name")
     user_email = config.get_value("user", "email")
+    origin_remote, remote_url = _get_remote_origin(repo)
 
     computer = {
-        "user": {
-            "name": user_name,
-            "email": user_email
-        }
+        "name": user_name,
+        "email": user_email,
+        "remoteUrl": remote_url
     }
     
     return computer
@@ -55,11 +55,7 @@ def get_working_copy(params, dirpath):
     untracked = repo.untracked_files
 
     # In order to make sure that we have up to date information, we fetch
-    origin_remote = next((r for r in repo.remotes if r.name == 'origin'), None)
-    if not origin_remote:
-        print "This tool requires a remote branch named 'origin'"
-        sys.exit(1)
-    remote_url = origin_remote.url
+    origin_remote, remote_url = _get_remote_origin(repo)
     origin_remote.fetch()
 
     # Gather information about unpushed commits
@@ -145,7 +141,14 @@ def _commit_to_dict(c, previous_commit=None):
     }
     return commit_info
 
-
+def _get_remote_origin(repo):
+    origin_remote = next((r for r in repo.remotes if r.name == 'origin'), None)
+    if not origin_remote:
+        print "This tool requires a remote branch named 'origin'"
+        sys.exit(1)
+    remote_url = origin_remote.url
+    return origin_remote, remote_url
+ 
 if __name__ == '__main__':
     print get_working_copy({})
 
