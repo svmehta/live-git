@@ -6,12 +6,11 @@ Scripts for retrieving data about the git repository
 from git import *
 import os, sys
 
-def get_info():
+def get_repo():
     """
-    Returns:
+    Validates whether the script was run in a git repository,
+    then returns the pygit2 Repo object
     """
-
-    # Scripting part (move into main() etc functions later)
     cwd = os.getcwd()
     git_directory = os.path.join(os.getcwd() + "/.git/")
 
@@ -22,11 +21,16 @@ def get_info():
         print "We found a file named .git/, but it should be a directory."
         sys.exit(1)
 
-    repo = Repo.init(cwd)
+    return Repo.init(cwd)
 
-    results = {}
 
-    # Computer (user information)
+def get_computer_info():
+    """
+    TODO
+    """
+    repo = get_repo()
+
+    # Read in git config
     config = repo.config_reader()
     user_name = config.get_value("user", "name")
     user_email = config.get_value("user", "email")
@@ -37,8 +41,16 @@ def get_info():
             "email": user_email
         }
     }
+    
+    return computer
 
-    results["computer"] = computer
+
+def get_working_copy(params):
+    """
+    Returns:
+    """
+    cwd = os.getcwd()
+    repo = get_repo()
 
     # Gather branch information
     current_branch = repo.active_branch
@@ -63,32 +75,29 @@ def get_info():
     previous_commit = None # The first commit to diff should be the last committed to the remote
     unpushed_commits = []
     for u in unpushed_objs:
-        unpushed_commits.append(commit_to_dict(u, previous_commit))
+        unpushed_commits.append(_commit_to_dict(u, previous_commit))
         previous_commit = u
 
     # Information about the commits on that branch
     # Grab the commits in reverse chronological order
-    # TODO: Deprecate this when we're sure it's no longer needed
+    # TODO: Deprecate "all commits" when we're sure it's no longer needed
     commits = []
     previous_commit = None  # Find diff relative to previous commit
     for c in repo.iter_commits():
-        commit_info = commit_to_dict(c, previous_commit)
+        commit_info = _commit_to_dict(c, previous_commit)
         commits.append(commit_info)
         previous_commit = c
 
     working_copy = {
-            "timestamp": "TODO",  # TODO record last time sent from client
             "branchName": current_branch.name,
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
             "clientDir": cwd
     }
 
-    results["workingCopy"] = working_copy
+    return working_copy
 
-    return results
-
-def commit_to_dict(c, previous_commit=None):
+def _commit_to_dict(c, previous_commit=None):
     """ 
     Converts a commit object to a dict that we can send to the server i
 
@@ -98,7 +107,7 @@ def commit_to_dict(c, previous_commit=None):
             to find a diff
     """
     current_diffs = c.diff(previous_commit, create_patch=True)
-    changed_files = [d.a_blob.name for d in current_diffs]
+    changed_files = [d.a_blob.name for d in current_diffs if d.a_blob]
     detailed_diffs = []
 
     for diff in current_diffs:
@@ -110,7 +119,7 @@ def commit_to_dict(c, previous_commit=None):
         # take b, since new files don't have an a_blob
         filename = d.b_blob.name  
         detailed_diffs.append({
-            "filename": filename, 
+            "file": filename, 
             "content": diff.diff }
             )
 
@@ -129,7 +138,5 @@ def commit_to_dict(c, previous_commit=None):
 
 
 if __name__ == '__main__':
-    get_info()
-    import json
-    print json.dumps(get_info())
+    print get_working_copy({})
 
