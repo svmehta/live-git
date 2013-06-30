@@ -132,20 +132,24 @@
 
 <template name="history-row">
   <div class="item">
-    <div class="action-icon {{this.iconType}}"></div>
-    <div class="branch {{this.branchStyle}}">
-      {{this.branchName}}
-    </div>
-    <div class="update-text quote">
-      {{this.message}}
-    </div>
-    <div class="time-stamp">
-      {{this.timeago}}
-    </div>
-    <div class="updated-files">
-      {{#each this.files}}
-        <div class="updated-file">{{this}}</div>
-      {{/each}}
-    </div>
+  
+      <div class="action-icon {{this.iconType}}"></div>
+   
+    
+      <div class="branch {{this.branchStyle}}">
+        {{this.branchName}}
+      </div>
+      <div class="update-text quote">
+        {{this.message}}
+      </div>
+      <div class="time-stamp">
+        {{this.timeago}}
+      </div>
+      <div class="updated-files">
+        {{#each this.files}}
+          <div class="updated-file">{{this}}</div>
+        {{/each}}
+      </div>
+    
   </div>
 </template>
