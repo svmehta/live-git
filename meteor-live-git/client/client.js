@@ -142,8 +142,6 @@ Template.user.topItem = function() {
     return processCommitData(this.workingCopy.commits[0], this.workingCopy);
 
   } else if (this.lastPushedCommit) {
-    console.log(this.lastPushedCommit);
-    console.log("foo");
     return processCommitData(this.lastPushedCommit, this.workingCopy, true);
 
   } else {
