@@ -15,9 +15,9 @@ This will create the directory `~/.gitdashboard`, install everything inside a vi
 
 ## Work in Progress Notes...
 
-*Currently branches are assumed to be tracking a remote branch located at "origin"
-*We run git fetch from the command line frequently to compare your current repository status to the remote, to avoid prompts for username and password it's best to set up your remote to fetch via ssh
-*There is no security
+* Currently branches are assumed to be tracking a remote branch located at "origin"
+* We run git fetch from the command line frequently to compare your current repository status to the remote, to avoid prompts for username and password it's best to set up your remote to fetch via ssh
+* There is no security
 
 ## Running the server
 
