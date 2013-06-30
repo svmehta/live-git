@@ -1,7 +1,22 @@
 Meteor.Router.add({
 
   '/bootstrap' : function () {
+    var body = this.request.body;
 
+    // create the user if it doesn't exist
+    var userId = Users.findOne ({name : body.name, email : body.email});
+
+    if (!userId) {
+      Users.insert ({name : body.name, email: body.email}, function (err, userId) {
+        if (err) {
+          return (err);
+        } else {
+          return [200, {userId : userId}];
+        }
+      });      
+    } else {
+      return [200, {userId : userId}];      
+    }
   },
   
   /*
@@ -21,6 +36,7 @@ Meteor.Router.add({
     WorkingCopies.findOne(query,
       function(err, result){ 
       if(!err){
+        //TODO
         return result;
       } else{
         return(err);
