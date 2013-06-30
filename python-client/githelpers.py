@@ -72,7 +72,7 @@ def get_working_copy(params):
             if line.startswith("commit")]
     unpushed_objs = [repo.commit(h) for h in unpushed_hexshas]
 
-    previous_commit = None # The first commit to diff should be the last committed to the remote
+    previous_commit = None  # First parent commit
     unpushed_commits = []
     for u in unpushed_objs:
         unpushed_commits.append(_commit_to_dict(u, previous_commit))
