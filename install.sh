@@ -1,6 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Installer (and runner) script for the Git Dashboard watcher process.
+#
+# Requires git and pip to already be installed!
+#
+# Run with:
+# curl https://raw.github.com/svmehta/live-git/master/install.sh | /bin/bash
 #
 
 # Store the current working directory; this is where we'll look for changes
