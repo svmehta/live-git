@@ -21,6 +21,7 @@ def main():
     git_directory = os.path.abspath(args.git_directory) or os.getcwd()
 
     bootstrap_path = os.path.join(os.path.expanduser("~"), BOOTSTRAP_DOTFILE)
+
     # Bootstrap file: expect computerId on first line, userId on second
     if not os.path.exists(bootstrap_path):
         user_info = githelpers.get_computer_info(git_directory)["user"]
@@ -35,7 +36,7 @@ def main():
         with open(bootstrap_path, "r") as f:
             s = f.read()
             computerId, userId = s.strip().split("\n")
-            
+
     working_copy = githelpers.get_working_copy({
         "userId": userId,
         "computerId": computerId
@@ -55,6 +56,6 @@ def _query_endpoint(path, body={}):
         print "There was an error sending data to the server: [%s, %d] %s" % (path, resp.status_code, resp.text)
     return resp
 
-   
+
 if __name__ == '__main__':
     main()
