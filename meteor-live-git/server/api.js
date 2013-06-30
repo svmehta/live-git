@@ -39,7 +39,7 @@ Meteor.Router.add({
    * update the state of the workingCopy
    */
   '/update' : function() {
-    var body = this.request.body.workingCopy;
+    var body = this.request.body;
     var clientCommits = body.unpushedCommits;
 
     console.log ('body', body)
