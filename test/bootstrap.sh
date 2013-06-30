@@ -1,0 +1,1 @@
+curl -X POST -H "Content-Type: application/json" -d @bootstrapData.json 'localhost:3000/bootstrap'

@@ -15,6 +15,8 @@ Users = new Meteor.Collection("users");
 /*
  * Repository consists of:
  * url - array of git clone URLs
+ * name
+ * slug - accessible address of dashboard
  */
 Repositories = new Meteor.Collection("repositories");
 
@@ -35,17 +37,9 @@ WorkingCopies = new Meteor.Collection("workingCopies");
  * userId
  * workingCopyId
  * clientHash
- * remoteHash
- * commit message
- * diffId
+ * message
+ * diff
  * timestamp
  * files
  */
 Commits = new Meteor.Collection("commits");
-
-
-/*
- * Diffs consists of:
- * content - the content of the diff
- */
-Diffs = new Meteor.Collection ("diffs");

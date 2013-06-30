@@ -3,6 +3,20 @@ Meteor.Router.add({
   '/bootstrap' : function () {
     var body = this.request.body;
 
+    var remoteUrl = body.remoteUrl;
+    if (!remoteUrl) {
+      return [400, 'must provide remoteUrl'];
+    }
+
+    var repository = Repositories.findOne ({url : remoteUrl});
+    var repositoryId;
+
+    if (repository) {
+      repositoryId = repository._id;
+    } else {
+      repositoryId = Repositories.insert ({url : remoteUrl});
+    }
+
     // create the user if it doesn't exist
     var user = Users.findOne ({name : body.name, email : body.email});
 
@@ -15,7 +29,7 @@ Meteor.Router.add({
     }
 
     var compId = apiHelpers.createComputer(userId);
-    return [200, JSON.stringify ({computerId : compId, userId : userId})];
+    return [200, JSON.stringify ({computerId : compId, userId : userId, repositoryId : repositoryId})];
   },
 
   /*
@@ -32,16 +46,26 @@ Meteor.Router.add({
     var body = this.request.body;
     var clientCommits = body.unpushedCommits;
 
+    if (!body.computerId) {
+      return [400, 'computerId not defined'];
+    } else if (!body.remoteUrl) {
+      return [400, 'remoteUrl not defined'];
+    }
+
     var userId = apiHelpers.getUserForComputer (body.computerId);
+    var repositoryId = apiHelpers.getRepoIdForUrl (body.remoteUrl);
 
     if (!userId) {
-      return [500, 'user doesnt exist for computerId'];
+      return [400, 'user doesnt exist for computerId'];
+    } else if (!repositoryId) {
+      return [400, 'repository doesnt exist for remoteUrl'];
     }
 
     var query = {
       computerId : body.computerId,
       branchName : body.branchName,
       clientDir : body.clientDir,
+      repositoryId : body.repositoryId,
       userId : userId
     };
 
@@ -90,6 +114,10 @@ var apiHelpers = {
 
   getUserForComputer : function (computerId) {
     return Computers.findOne ({_id : computerId}).userId;
+  },
+
+  getRepoIdForUrl : function (remoteUrl) {
+    return Repositories.findOne ({url : remoteUrl})._id;
   },
 
   syncCommits : function (workingCopyId, clientCommits) {
