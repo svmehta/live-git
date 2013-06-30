@@ -65,16 +65,46 @@ var processCommitData = function(commit, workingCopy) {
 };
 
 
+Template.user.uncommittedFiles = function() {
+  if (!this.workingCopy) { console.log("No working copy to inspect!"); }
+
+  var wc_timeago = moment(this.workingCopy.timestamp).fromNow();
+  var result = {
+    files: [],
+    branchStyle: this.workingCopy.fileStats.numBehind > 0 ? "behind" : "",
+    branchName: this.workingCopy.branchName,
+    iconType: "write"
+  };
+
+  if (this.workingCopy.gitDiff.length) {
+    this.workingCopy.gitDiff.forEach(function(file) {
+      file.timeago = wc_timeago;
+      result.files.push(file);
+    });
+    result.firstFile = result.files.shift();
+    return result;
+
+  } else if (this.workingCopy.untrackedFiles.length) {
+    this.workingCopy.untrackedFiles.forEach(function(filename) {
+      result.files.push({
+        file: filename,
+        timeago: wc_timeago
+      });
+    });
+    result.firstFile = result.files.shift();
+    return result;
+
+  } else {
+    return false;
+  }
+};
+
+
 Template.user.topItem = function() {
   if (!this.workingCopy) { console.log("No working copy to inspect!"); }
 
-  if (this.workingCopy.untrackedFiles.length) {
-    return {
-      files: this.workingCopy.untrackedFiles,
-      branchStyle: this.workingCopy.fileStats.numBehind > 0 ? "behind" : "",
-      branchName: this.workingCopy.branchName,
-      iconType: "write"
-    };
+  if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length) {
+    return false;
 
   } else if(this.workingCopy.commits.length) {
     return processCommitData(this.workingCopy.commits[0], this.workingCopy);
