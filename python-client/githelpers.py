@@ -58,7 +58,7 @@ def get_working_copy(params, dirpath):
     untracked = []
     for u in untracked_filenames:
         lastMod, timeSince = _last_modified_time(u)
-        untracked.append({ "filename": filename, "lastModified": lastMod, "timeSinceModified": timeSince })
+        untracked.append({ "filename": u, "lastModified": lastMod, "timeSinceModified": timeSince })
     # In order to make sure that we have up to date information, we fetch
     origin_remote, remote_url = _get_remote_origin(repo)
     try:
