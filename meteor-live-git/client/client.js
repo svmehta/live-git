@@ -85,7 +85,6 @@ Template.main.users = function() {
 
 
 var processCommitData = function(commit, workingCopy, isDone) {
-  // var commit = Commits.findOne({ _id: commitId });
   commit.timeago = moment.unix(commit.timestamp).fromNow();
   commit.branchName = workingCopy.branchName;
   commit.numBehind = workingCopy.fileStats.numBehind;
@@ -133,7 +132,7 @@ Template.user.uncommittedFiles = function() {
 
 
 Template.user.topItem = function() {
-      console.log(this.lastPushedCommit)
+  console.log(this.lastPushedCommit);
   if (!this.workingCopy) { console.log("No working copy to inspect!"); }
 
   if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length) {
