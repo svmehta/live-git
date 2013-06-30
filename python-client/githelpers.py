@@ -99,7 +99,6 @@ def get_working_copy(params, dirpath):
 
     # Pull statistics from the zsh git plugin (i.e. number of untracked)
     file_stats = gitstatus.get_statistics(dirpath)
-    print file_stats
 
     # Unstaged changes for added files (aka git diff)
     try:
