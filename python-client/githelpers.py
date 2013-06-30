@@ -71,7 +71,7 @@ def get_working_copy(params):
     unpushed_hexshas = [line.split(" ")[1] for line in raw_unpushed_str.split('\n') 
             if line.startswith("commit")]
     unpushed_objs = [repo.commit(h) for h in unpushed_hexshas]
-
+    print unpushed_objs[0].hexsha 
     previous_commit = None  # First parent commit
     unpushed_commits = []
     for u in unpushed_objs:
