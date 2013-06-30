@@ -23,13 +23,13 @@ Meteor.Router.add({
    */
   '/status': function() {
     var body = this.request.body;
-    var user = apiHelpers.getUserForComputer (body.computerId);
+    var userId = apiHelpers.getUserForComputer (body.computerId);
 
     var query = {
       computerId : body.computerId,
       branchName : body.branchName,
       clientDir : body.clientDir,
-      userId : user._id
+      userId : userId
     };
 
     return WorkingCopies.findOne(query);
@@ -46,9 +46,9 @@ Meteor.Router.add({
       return [400, 'must provide commits'];
     }
 
-    var user = apiHelpers.getUserForComputer (body.computerId);
+    var userId = apiHelpers.getUserForComputer (body.computerId);
 
-    if (!user) {
+    if (!userId) {
       return [500, 'user doesnt exist for computerId'];
     }
 
@@ -56,7 +56,7 @@ Meteor.Router.add({
       computerId : body.computerId,
       branchName : body.branchName,
       clientDir : body.clientDir,
-      userId : user._id
+      userId : userId
     };
 
     var workingCopy = WorkingCopies.findOne(query);
