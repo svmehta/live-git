@@ -88,12 +88,6 @@ var processCommitData = function(commit, workingCopy) {
   return commit;
 };
 
-Template.user.aheadBehind = function() {
-    return {
-        "numAhead": this.workingCopy.fileStats.numAhead,
-        "numBehind": this.workingCopy.fileStats.numBehind
-    };
-}
 
 Template.user.uncommittedFiles = function() {
   if (!this.workingCopy) { console.log("No working copy to inspect!"); }
