@@ -6,7 +6,6 @@ A real-time view of the Git status of your team.
 
 * [Install Meteor](http://docs.meteor.com/#quickstart): `curl https://install.meteor.com | /bin/sh`
 * [Install meteorite](https://github.com/oortcloud/meteorite#installing-meteorite): `sudo -H npm install -g meteorite`
-* [Install libgit2](https://github.com/libgit2/libgit2#building-libgit2---using-cmake): `apt-get install libgit2-dev` or `brew install libgit2`
 
 ## Getting started
 
