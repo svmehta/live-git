@@ -47,6 +47,12 @@
 
         {{> branchChart}}
 
+        <div class="todo">
+            {{#with aheadBehind}}
+                {{numAhead}}
+                {{numBehind}}
+            {{/with}}
+        </div>
         <div class="history">
           {{#each olderItems}}
             {{> history-row}}
