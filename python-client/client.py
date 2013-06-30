@@ -4,6 +4,7 @@ import os
 import requests
 import githelpers
 import argparse
+import time
 import json
 
 BOOTSTRAP_DOTFILE = ".gitlive"
@@ -26,23 +27,28 @@ def main():
     if not os.path.exists(bootstrap_path):
         user_info = githelpers.get_computer_info(git_directory)
         resp = _query_endpoint("bootstrap", user_info).json()
-        userId, computerId = resp["userId"], resp["computerId"]
+        userId, computerId, repositoryId = resp["userId"], resp["computerId"], resp["repositoryId"]
         with open(bootstrap_path, "w") as f:
             f.write(computerId)
             f.write("\n")
             f.write(userId)
+            f.write("\n")
+            f.write(repositoryId)
     else:
         with open(bootstrap_path, "r") as f:
             s = f.read()
-            computerId, userId = s.strip().split("\n")
+            computerId, userId, repositoryId = s.strip().split("\n")
 
-    working_copy = githelpers.get_working_copy({
-        "userId": userId,
-        "computerId": computerId
-    }, git_directory)
+    print 'Your project dashboard is located at ' + SERVER_ROOT + '/' + repositoryId
 
-    working_resp = _query_endpoint("update", working_copy)
+    while True:
+        working_copy = githelpers.get_working_copy({
+            "userId": userId,
+            "computerId": computerId
+        }, git_directory)
 
+        working_resp = _query_endpoint("update", working_copy)
+        time.sleep (60)
 
 def _query_endpoint(path, body={}):
     """
