@@ -31,6 +31,8 @@ def main():
     # Handle command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", dest="git_directory", default=None)
+    parser.add_argument("-p", dest="poll_timeout", type=int, default=5)
+
     args = parser.parse_args()
 
     if args.git_directory:
@@ -64,7 +66,8 @@ def main():
 
         working_resp = _query_endpoint("update", working_copy).json()
         printWelcomeMessage(working_resp["repositoryId"])
-        time.sleep (60)
+
+        time.sleep(args.poll_timeout)
 
 
 def _query_endpoint(path, body={}):
