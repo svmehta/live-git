@@ -79,26 +79,46 @@ var apiHelpers = {
   },
 
   syncCommits : function (workingCopyId, clientCommits) {
-    var newCommits = [];
+    var commitsToAdd = [];
+    var commitsToRemove = [];
+
     var updates = {
-      $addToSet : {commitIds : {$each : newCommits}}
+      $addToSet : {commitIds : {$each : commitsToAdd}},
+      $pullAll : {commitIds: commitsToRemove}
     };
 
-    var commits = Commits.find ({workingCopyId : workingCopyId}).fetch();
-    var hashes = _.map (commits, function (commit) { return commit.clientHash});
+    var dbCommits = Commits.find ({workingCopyId : workingCopyId}).fetch();
+    var hashes = _.map (dbCommits, function (commit) { return commit.clientHash});
 
     if (clientCommits) {
+
       clientCommits.forEach (function (commit) {
+        // the commit exists on the client but not on the server
         if (hashes.indexOf (commit.clientHash) === -1) {
           commit.workingCopyId = workingCopyId;
           var commitId = Commits.insert (commit);
-          newCommits.push (commitId);
-        } else {
-          //TODO: do we need to sync these to make sure stuff hasn't changed?
+          commitsToAdd.push (commitId);
         }
       });
+
+      var pos = 0;
+
+      hashes.forEach (function (hash) {
+        // the commit exists on the server but not on the client
+        if (clientCommits.indexOf (hash) === -1) {
+          commitsToRemove.push (dbCommits[pos]._id);
+        }
+        pos+=1;
+      });
+
     } else {
-      console.log ('no client commits');
+      console.log ('no client commits, removing everything');
+      commitsToRemove = _.map (dbCommits, function (commit) { return commit._id});
+    }
+
+    console.log ('commitsToRemove', commitsToRemove);
+    if (commitsToRemove.length) {
+      Commits.update ({_id : {$in : commitsToRemove}}, {$set : {invalid : true}}, {multi : true});
     }
 
     return updates;
