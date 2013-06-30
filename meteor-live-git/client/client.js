@@ -50,7 +50,7 @@ Template.main.users = function() {
 
     // TODO: total hack for demo purposes
     var lastPushedCommit = Commits.findOne (
-      {repositoryId : repoId, userId : user._id, invalid: true},
+      { userId : user._id, invalid: true},
       { sort : {timestamp : -1}}
     );
 
