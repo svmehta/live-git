@@ -1,7 +1,6 @@
 Meteor.Router.add({
 
   '/bootstrap' : function () {
-    console.log ('bootstrap');
     var body = this.request.body;
 
     // create the user if it doesn't exist
