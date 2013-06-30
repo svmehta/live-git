@@ -40,7 +40,7 @@
       <div class="span9">
         {{#with allDone}}
             <div class="all-done-message">
-                {{message}}     
+                {{message}}
             </div>
         {{/with}}
 
@@ -54,6 +54,12 @@
         <div class="item item-two branch-box">
         {{> branchChart}}
       </div>
+
+        {{#if showingDiff}}
+          <div class="file-diff">
+            <div><pre><code>{{{fileDiff}}}</code></pre></div>
+          </div>
+        {{/if}}
 
         <div class="history">
           {{#each olderItems}}
@@ -86,7 +92,7 @@
     <div class="main-block">
       <div class="action-icon {{this.iconType}}"></div>
       <div class="main write">
-        <div class="item file">
+        <div class="item file" rel="{{this.firstFile.file}}">
           {{this.firstFile.file}}
           <br>
           <div class="time-stamp">
@@ -94,7 +100,7 @@
           </div>
         </div>
         {{#each this.files}}
-          <div class="item item-two file">
+          <div class="item item-two file" rel="{{this.file}}">
             {{this.file}}
             <br>
             <div class="time-stamp">
@@ -116,6 +122,13 @@
     {{#if this.numBehind}}
       <div class="behind-number">{{this.numBehind}} behind</div>
     {{/if}}
+    {{#if this.allDone}}
+        <div class="behind-number all-done-message">
+            All up-to-date! Probably slacking...
+        </div>
+    {{/if}}
+
+
     <div class="main-block">
       <div class="action-icon {{this.iconType}}"></div>
       <div class="main quote">

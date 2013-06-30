@@ -20,7 +20,6 @@ Template.main.repository = function() {
 
     return repo;
   } else if (!Session.get("searchedForRepo")) {
-      console.log("loading")
     return { name: "Loading..." };
   } else {
     return { name: "Error: invalid repository ID" };
@@ -46,11 +45,21 @@ Template.main.users = function() {
     ).fetch();
 
     var user = Users.findOne({ _id: copy.userId })
+
     if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
+
+    // TODO: total hack for demo purposes
+    var lastPushedCommit = Commits.findOne (
+      { userId : user._id, invalid: true},
+      { sort : {timestamp : -1}}
+    );
+
+    console.log (user.email.trim().toLowerCase())
 
     userArray.push({
       "user": user,
       "workingCopy": copy,
+      "lastPushedCommit" : lastPushedCommit,
       "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
     });
 
@@ -77,13 +86,13 @@ Template.main.users = function() {
 };
 
 
-var processCommitData = function(commit, workingCopy) {
-  // var commit = Commits.findOne({ _id: commitId });
+var processCommitData = function(commit, workingCopy, isDone) {
   commit.timeago = moment.unix(commit.timestamp).fromNow();
   commit.branchName = workingCopy.branchName;
   commit.numBehind = workingCopy.fileStats.numBehind;
   commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
-  commit.iconType = "save";
+  commit.iconType = isDone ? "push" : "save";
+  commit.allDone = isDone;
   // console.log(commit);
   return commit;
 };
@@ -95,6 +104,7 @@ Template.user.uncommittedFiles = function() {
   var wc_timeago = moment(this.workingCopy.timestamp).fromNow();
   var result = {
     files: [],
+    copy_id: this.workingCopy._id,
     numBehind: this.workingCopy.fileStats.numBehind,
     branchStyle: this.workingCopy.fileStats.numBehind > 0 ? "behind" : "",
     branchName: this.workingCopy.branchName,
@@ -104,6 +114,7 @@ Template.user.uncommittedFiles = function() {
   if (this.workingCopy.gitDiff.length) {
     this.workingCopy.gitDiff.forEach(function(file) {
       file.timeago = moment(file.lastModified).fromNow();  // Last modified
+      file.copy_id = result.copy_id;  // hack for diff click hander below
       result.files.push(file);
     });
     result.firstFile = result.files.shift();
@@ -134,19 +145,12 @@ Template.user.topItem = function() {
   } else if(this.workingCopy.commits.length) {
     return processCommitData(this.workingCopy.commits[0], this.workingCopy);
 
+  } else if (this.lastPushedCommit) {
+    return processCommitData(this.lastPushedCommit, this.workingCopy, true);
   } else {
     return false;
   }
 };
-
-Template.user.allDone = function() {
-    if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length || this.workingCopy.commits.length) {
-        return false;
-    }
-    return { message: "Probably slacking..." };
-}
-
-
 
 Template.user.olderItems = function() {
   if (!this.workingCopy) { console.log("No working copy to inspect!"); }
@@ -160,7 +164,7 @@ Template.user.olderItems = function() {
   var commits = [];
   var max = first_historic_commit + 3;
 
-  if (Session.get("openCopy") == this.workingCopy._id) {
+  if (Session.equals("openCopy", this.workingCopy._id)) {
     max = this.workingCopy.commits.length;
   }
 
@@ -185,16 +189,49 @@ Template.user.hasMore = function() {
 
 
 Template.user.showOrHide = function() {
-  return (Session.get("openCopy") == this.workingCopy._id) ? "Hide" : "Show";
+  return (Session.equals("openCopy", this.workingCopy._id)) ? "Hide" : "Show";
+};
+
+
+Template.user.showingDiff = function() {
+  return (Session.equals("openDiffCopy", this.workingCopy._id));
+};
+
+
+Template.user.fileDiff = function() {
+  var output;
+  this.workingCopy.gitDiff.forEach(function(diff) {
+    if (Session.equals("openDiffFile", diff.file)) {
+      output = diff.content;
+    }
+  });
+  if (output) { return hljs.highlight("diff", output).value; }
 };
 
 
 Template.user.events({
   'click .more-text': function (evt) {
-    if (Session.get("openCopy") == this.workingCopy._id) {
+    if (Session.equals("openCopy", this.workingCopy._id)) {
       Session.set("openCopy", null);
     } else {
       Session.set("openCopy", this.workingCopy._id);
+    }
+  }
+});
+
+Template['new-files-row'].events({
+  'click .file': function (evt) {
+    var rel = evt.target.getAttribute("rel");
+    if (!rel) { rel = evt.target.parentElement.getAttribute("rel"); }
+    if (rel) {
+      if (Session.equals("openDiffCopy", this.copy_id) && Session.equals("openDiffFile", rel)) {
+        Session.set("openDiffCopy", null);
+        Session.set("openDiffFile", null);
+      } else {
+      console.log(this.copy_id, rel)
+        Session.set("openDiffCopy", this.copy_id);
+        Session.set("openDiffFile", rel);
+      }
     }
   }
 });
