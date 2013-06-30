@@ -91,7 +91,7 @@ Meteor.Router.add({
       var update = {
         $set : {
           untrackedFiles : body.untrackedFiles,
-          fileStats = apiHelpers.getFileStats (body),
+          fileStats : apiHelpers.getFileStats (body),
           timestamp : Date.now(),
           gitDiff : body.gitDiff
         }
