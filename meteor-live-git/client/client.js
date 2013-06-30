@@ -141,7 +141,7 @@ Template.user.topItem = function() {
     return processCommitData(this.workingCopy.commits[0], this.workingCopy);
 
   } else if (this.lastPushedCommit) {
-    return processCommitData(this.lastPushedCommit, this.workingCopy);
+    return processCommitData(this.lastPushedCommit, this.workingCopy, true);
 
   } else {
     return false;
