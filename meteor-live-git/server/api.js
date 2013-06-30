@@ -17,7 +17,7 @@ Meteor.Router.add({
     var compId = apiHelpers.createComputer(user);
     return [200, JSON.stringify ({computerId : compId, userId : user._id})];
   },
-  
+
   /*
    * let client know last commit in db for a given branch
    */
@@ -87,7 +87,7 @@ var apiHelpers = {
   getUserForComputer : function (computerId) {
     return Computers.findOne ({_id : computerId}).userId;
   },
-  
+
   insertNewCommits : function (workingCopyId, clientCommits) {
     var newCommits = [];
     var updates = {
