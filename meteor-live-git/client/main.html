@@ -126,11 +126,11 @@
           </div>
         </div>
       </div>
-      <div class="updated-files">
+     
         {{#each this.files}}
-          <div class="updated-file">{{this}}</div>
+          <div class="item file-two file">{{this}}</div>
         {{/each}}
-      </div>
+  
     </div>
   </div>
 </template>
@@ -138,10 +138,12 @@
 
 <template name="history-row">
   <div class="item">
-  
+  <div class="row">
+    <div class="span1">
       <div class="action-icon {{this.iconType}}"></div>
+    </div>
    
-    
+    <div class="span8">
       <div class="branch {{this.branchStyle}}">
         {{this.branchName}}
       </div>
@@ -156,6 +158,7 @@
           <div class="updated-file">{{this}}</div>
         {{/each}}
       </div>
-    
+    </div>
+  </div> 
   </div>
 </template>
