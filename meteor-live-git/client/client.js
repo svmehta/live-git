@@ -14,6 +14,8 @@ Template.main.repository = function() {
     if (!repo.name) {
       var matches = /\/([^\/]+?)(?:.git)?$/.exec(repo.url);
       repo.name = matches[1];
+
+      if (repo.name == 'live-git') { repo.name = "Git Dashboard"; }
     }
 
     Session.set("searchedForRepo", true);
