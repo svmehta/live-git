@@ -72,12 +72,12 @@ def get_statistics(git_directory):
     ahead = ahead or 0  # In case we're not on any branch
 
     out = {
-        "num_staged": staged,
-        "num_conflicts": conflicts,
-        "num_changed": changed,
-        "num_untracked": untracked,
-        "num_behind": behind,
-        "num_ahead": ahead
+        "numStaged": staged,
+        "numConflicts": conflicts,
+        "numChanged": changed,
+        "numUntracked": untracked,
+        "numBehind": behind,
+        "numAhead": ahead
     }
 
     # Pop back to old directory

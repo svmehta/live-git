@@ -6,6 +6,7 @@ Scripts for retrieving data about the git repository
 from git import *
 import os, sys
 import gitstatus
+import json
 
 def get_repo(dirpath):
     """
@@ -90,6 +91,11 @@ def get_working_copy(params, dirpath):
     # Pull statistics from the zsh git plugin (i.e. number of untracked)
     file_stats = gitstatus.get_statistics(dirpath)
 
+    # Unstaged changes for added files (aka git diff)
+    # current_diffs_raw = repo.index.diff(None, create_patch=True)
+    # current_diffs = _difflist_to_dictlist(current_diffs_raw)
+    current_diffs = []
+
     working_copy = {
             "computerId": params["computerId"],
             "branchName": current_branch.name,
@@ -97,8 +103,11 @@ def get_working_copy(params, dirpath):
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
             "clientDir": dirpath,
-            "fileStats": file_stats
+            "gitDiff": current_diffs,
     }
+    for k, v in file_stats.iteritems():
+        print k
+        working_copy[k] = v
 
     return working_copy
 
@@ -114,21 +123,7 @@ def _commit_to_dict(c, previous_commit=None):
     if previous_commit: 
         current_diffs = c.diff(previous_commit, create_patch=True)
         changed_files = [d.a_blob.name for d in current_diffs if d.a_blob]
-        detailed_diffs = []
-
-        for diff in current_diffs:
-            # For now, ignore renamed, deleted files from detailed_diffs
-            if diff.deleted_file or diff.renamed:
-                continue
-
-            # We can take a or b for the two diffs: 
-            # take b, since new files don't have an a_blob
-            filename = d.b_blob.name  
-            detailed_diffs.append({
-                "file": filename, 
-                "content": diff.diff 
-                }
-            )
+        detailed_diffs = _difflist_to_dictlist(current_diffs)
     else:
         detailed_diffs = []  # TODO make this based on the last pushed commit
         changed_files = []
@@ -146,6 +141,26 @@ def _commit_to_dict(c, previous_commit=None):
     }
     return commit_info
 
+def _difflist_to_dictlist(diffs):
+    """
+    Converts a list of diffs to a list of dicts to send to the server
+    """
+    dictlist = []
+    for diff in diffs:
+        # For now, ignore renamed, deleted files from detailed_diffs
+        if diff.deleted_file or diff.renamed:
+            continue
+
+        # We can take a or b for the two diffs: 
+        # take b, since new files don't have an a_blob
+        filename = diff.b_blob.name  
+        dictlist.append({
+            "file": filename, 
+            "content": diff.diff 
+            }
+        )
+    return dictlist
+
 def _get_remote_origin(repo):
     origin_remote = next((r for r in repo.remotes if r.name == 'origin'), None)
     if not origin_remote:
@@ -153,7 +168,5 @@ def _get_remote_origin(repo):
         sys.exit(1)
     remote_url = origin_remote.url
     return origin_remote, remote_url
- 
-if __name__ == '__main__':
-    print get_working_copy({})
+
 
