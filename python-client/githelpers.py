@@ -6,6 +6,7 @@ Scripts for retrieving data about the git repository
 from git import *
 import os, sys
 import gitstatus
+import json
 
 def get_repo(dirpath):
     """

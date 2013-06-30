@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#import daemon
+import json
 import os
 import requests
 import githelpers
@@ -8,9 +8,6 @@ import argparse
 
 BOOTSTRAP_DOTFILE = ".gitlive"
 SERVER_ROOT = "http://localhost:3000"
-
-# with daemon.DaemonContext():
-#     print "foo"
 
 def main():
     # Handle command line arguments
@@ -52,7 +49,7 @@ def _query_endpoint(path, body={}):
     Helper function for getting the URL of an endpoint
     Only does POST for now
     """
-    resp = requests.post(SERVER_ROOT + "/" + path, data=body)
+    resp = requests.post(SERVER_ROOT + "/" + path, data=json.dumps(body))
     if not resp.status_code == requests.codes.ok:
         print "There was an error sending data to the server: [%s, %d] %s" % (path, resp.status_code, resp.text)
     return resp
