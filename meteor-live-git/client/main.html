@@ -40,7 +40,7 @@
       <div class="span9">
         {{#with allDone}}
             <div class="all-done-message">
-                {{message}}     
+                {{message}}
             </div>
         {{/with}}
 
@@ -55,7 +55,7 @@
 
         {{#if showingDiff}}
           <div class="file-diff">
-            <pre>{{fileDiff}}</pre>
+            <div><pre><code>{{{fileDiff}}}</code></pre></div>
           </div>
         {{/if}}
 
