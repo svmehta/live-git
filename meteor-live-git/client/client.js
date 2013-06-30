@@ -135,3 +135,30 @@ Template.user.olderItems = function() {
 
   return commits;
 };
+
+
+Template.branchChart.hasCommitsAhead = function() {
+  if (!this.workingCopy) { console.log("No working copy to inspect!"); }
+
+  return (this.workingCopy.fileStats.numAhead > 0);
+};
+
+Template.branchChart.commitsAhead = function() {
+  var html = "";
+  for (var i = 0; i < this.workingCopy.fileStats.numAhead; i ++) {
+    html += "<div class=\"circle bottom-row\"></div>";
+  }
+  return html;
+};
+
+Template.branchChart.commitsBehind = function() {
+  var html = "";
+  for (var i = 0; i < this.workingCopy.fileStats.numBehind; i ++) {
+    html += "<div class=\"circle top-row";
+    if (i == this.workingCopy.fileStats.numBehind - 1) { html += " last"; }
+    html += "\"></div>";
+  }
+  return html;
+};
+
+
