@@ -50,9 +50,20 @@ Meteor.Router.add({
 
     if (!workingCopy) {
       query.commitIds = []; //init empty array
+      query.untrackedFiles = body.untrackedFiles;
+      query.fileStats = body.fileStats;
+      query.timestamp = Date.now();
       workingCopyId = WorkingCopies.insert(query);
     } else {
       workingCopyId = workingCopy._id;
+      var update = { 
+        $set : {
+          untrackedFiles : body.untrackedFiles,
+          fileStats : body.fileStats,
+          timestamp : Date.now()
+        } 
+      };
+      WorkingCopies.update({_id : workingCopyId}, update);
     }
 
     var updates = apiHelpers.syncCommits (workingCopyId, clientCommits);
