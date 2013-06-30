@@ -13,7 +13,6 @@ Meteor.Router.add({
     else {
       userId = Users.insert ({name : body.name, email: body.email});
     }
-    console.log(userId);
 
     var compId = apiHelpers.createComputer(userId);
     return [200, JSON.stringify ({computerId : compId, userId : userId})];
@@ -32,7 +31,6 @@ Meteor.Router.add({
   '/update' : function() {
     var body = this.request.body;
     var clientCommits = body.unpushedCommits;
-    console.log(body)
 
     var userId = apiHelpers.getUserForComputer (body.computerId);
 
@@ -48,18 +46,26 @@ Meteor.Router.add({
     };
 
     var workingCopy = WorkingCopies.findOne(query);
+    var workingCopyId;
 
     if (!workingCopy) {
       query.commitIds = []; //init empty array
-      var workingCopyId = WorkingCopies.insert(query);
-      var updates = apiHelpers.syncCommits (workingCopyId, clientCommits);
-      WorkingCopies.update({_id : workingCopyId}, updates);
-      return [200, 'new working copy created'];
+      workingCopyId = WorkingCopies.insert(query);
     } else {
-      var updates = apiHelpers.syncCommits (workingCopy._id, clientCommits);
-      WorkingCopies.update({_id : workingCopy._id}, updates);
-      return [200, 'updated existing working copy'];
+      workingCopyId = workingCopy._id;
     }
+
+    var updates = apiHelpers.syncCommits (workingCopyId, clientCommits);
+
+    if (updates.removesLen > 0) {
+      WorkingCopies.update({_id : workingCopyId}, updates.remove);
+    }
+
+    if (updates.addsLen > 0) {
+      WorkingCopies.update({_id : workingCopyId}, updates.add);
+    }
+
+    return 200;
   }
 
 });
@@ -72,8 +78,6 @@ var apiHelpers = {
   },
 
   getUserForComputer : function (computerId) {
-    console.log ('computerId', computerId);
-    console.log (Computers.findOne ({_id : computerId}));
     return Computers.findOne ({_id : computerId}).userId;
   },
 
@@ -82,18 +86,19 @@ var apiHelpers = {
     var commitsToRemove = [];
 
     var updates = {
-      $addToSet : {commitIds : {$each : commitsToAdd}},
-      $pullAll : {commitIds: commitsToRemove}
+      'add' : { $addToSet : {commitIds : {$each : commitsToAdd}} },
+      'remove' : { $pullAll :  {commitIds: commitsToRemove} }
     };
 
-    var dbCommits = Commits.find ({workingCopyId : workingCopyId}).fetch();
-    var hashes = _.map (dbCommits, function (commit) { return commit.clientHash});
+    var dbCommits = Commits.find ({workingCopyId : workingCopyId, invalid : {$ne : true}}).fetch();
+    var dbHashes = _.map (dbCommits, function (commit) { return commit.clientHash});
+    var clientHashes = _.map (clientCommits, function (commit) { return commit.clientHash});
 
     if (clientCommits) {
 
       clientCommits.forEach (function (commit) {
         // the commit exists on the client but not on the server
-        if (hashes.indexOf (commit.clientHash) === -1) {
+        if (dbHashes.indexOf (commit.clientHash) === -1) {
           commit.workingCopyId = workingCopyId;
           var commitId = Commits.insert (commit);
           commitsToAdd.push (commitId);
@@ -101,10 +106,9 @@ var apiHelpers = {
       });
 
       var pos = 0;
-
-      hashes.forEach (function (hash) {
+      dbHashes.forEach (function (hash) {
         // the commit exists on the server but not on the client
-        if (clientCommits.indexOf (hash) === -1) {
+        if (clientHashes.indexOf (hash) === -1) {
           commitsToRemove.push (dbCommits[pos]._id);
         }
         pos+=1;
@@ -115,10 +119,12 @@ var apiHelpers = {
       commitsToRemove = _.map (dbCommits, function (commit) { return commit._id});
     }
 
-    console.log ('commitsToRemove', commitsToRemove);
     if (commitsToRemove.length) {
-      Commits.update ({_id : {$in : commitsToRemove}}, {$set : {invalid : true}}, {multi : true});
+      Commits.remove ({_id : {$in : commitsToRemove}}, {$set : {invalid : true}}, {multi : true});
     }
+
+    updates.addsLen = commitsToAdd.length;
+    updates.removesLen = commitsToRemove.length;
 
     return updates;
   }
