@@ -45,6 +45,7 @@ Meteor.Router.add({
   '/update' : function() {
     var body = this.request.body;
     var clientCommits = body.unpushedCommits;
+    console.log(body)
 
     if (!body.computerId) {
       return [400, 'computerId not defined'];
