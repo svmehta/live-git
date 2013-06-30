@@ -1,19 +1,26 @@
 // Main template
-var getRepository = function() {
-  return Repositories.findOne();
+
+Template.main.repository = function() {
+  var repo = Repositories.findOne();
+  if (repo && !repo.name) {
+    var matches = /\/([^\/]+?)(?:.git)?$/.exec(repo.url);
+    repo.name = matches[1];
+  }
+
+  return repo;
 };
 
-var getUsers = function() {
+
+Template.main.users = function() {
   var users = Users.find().fetch();   // TODO filter for current repository
 
   var usersWithWorkingCopy = _.map(users, function(user) {
     var workingCopy = WorkingCopies.findOne({ userId: user._id, },
       { sort:  { timestamp: -1 }});
-    console.log(workingCopy)
     return {
       "user": user,
       "workingCopy": workingCopy,
-      "gravatarHash": CryptoJS.md5(user.email)
+      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
     };
   });
 
@@ -21,10 +28,6 @@ var getUsers = function() {
   return usersWithWorkingCopy;
 };
 
-
-Template.main.repository = getRepository;
-
-Template.main.users = getUsers;
 // Template.main.repository = { name: "My Awesome Repo" }
 //
 // Template.main.users = [
