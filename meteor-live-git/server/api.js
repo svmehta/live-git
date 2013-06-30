@@ -7,15 +7,30 @@ Meteor.Router.add({
     var userId = Users.findOne ({name : body.name, email : body.email});
 
     if (!userId) {
-      Users.insert ({name : body.name, email: body.email}, function (err, userId) {
-        if (err) {
-          return (err);
-        } else {
-          return [200, {userId : userId}];
-        }
-      });      
+      Users.insert ({name : body.name, email: body.email},
+        function (err, userId) {
+          if (err) {
+            return (err);
+          } else {
+            // create the computer object
+            apiHelpers.createComputer (userId, function (err, compId) {
+              if (err) {
+                return [500, 'error creating computer model'];
+              } else {
+                return [200, {compId: compId}];
+              }
+            });
+          }
+        });
     } else {
-      return [200, {userId : userId}];      
+      // create the computer object
+      apiHelpers.createComputer (userId, function (err, compId) {
+        if (err) {
+          return [500, 'error creating computer model'];
+        } else {
+          return [200, {compId: compId}];
+        }
+      });
     }
   },
   
@@ -92,18 +107,23 @@ Meteor.Router.add({
 
 var apiHelpers = {
 
+  createComputer : function (userId) {
+    return Computers.insert ({userId : userId});
+  },
+
   getUserForComputer : function (computerId) {
     return Users.findOne ({computerId : computerId});
   },
   
   updateWorkingCopy : function (updates, workingCopyId) {
-    WorkingCopies.update({_id : workingCopy._id}, updates, function (err) {
-      if (err) {
-        callback(err);
-      } else {
-        callback();
-      }
-    });
+    WorkingCopies.update({_id : workingCopy._id}, updates,
+      function (err) {
+        if (err) {
+          callback(err);
+        } else {
+          callback();
+        }
+      });
   },
 
   insertNewCommits : function (workingCopyId, clientGitData) {
@@ -126,5 +146,4 @@ var apiHelpers = {
 
     return updates;
   }
-
 }
