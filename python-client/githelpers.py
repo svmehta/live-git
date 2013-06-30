@@ -54,11 +54,14 @@ def get_working_copy(params, dirpath):
 
     # Gather branch information
     current_branch = repo.active_branch
-    untracked_filenames = repo.untracked_files
+    untracked_files = repo.untracked_files
+    untracked_abspaths = [os.path.join(dirpath, f) for f in untracked_files]
+
     untracked = []
-    for u in untracked_filenames:
-        lastMod, timeSince = _last_modified_time(u)
-        untracked.append({ "filename": u, "lastModified": lastMod, "timeSinceModified": timeSince })
+    for name, abspath in zip(untracked_files, untracked_abspaths):
+        lastMod, timeSince = _last_modified_time(abspath)
+        untracked.append({ "filename": name, "lastModified": lastMod, "timeSinceModified": timeSince })
+
     # In order to make sure that we have up to date information, we fetch
     origin_remote, remote_url = _get_remote_origin(repo)
     try:
