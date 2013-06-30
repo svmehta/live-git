@@ -27,7 +27,7 @@ def main():
     else:
         with open(bootstrap_path, "r") as f:
             s = f.read()
-            userId, computerId = s.strip().split("\n")
+            computerId, userId = s.strip().split("\n")
             
     working_copy = githelpers.get_working_copy({
         "userId": userId,
