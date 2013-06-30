@@ -69,8 +69,8 @@ def get_statistics(git_directory):
                             remote += '%s%s' % (symbols['ahead of'], ahead)
 
     behind = behind or 0
-    ahead = ahead or 0  # In case we're not on any branch
-
+    ahead = ahead or 0  # In case we're not on any branch, record 0
+    
     out = {
         "numStaged": staged,
         "numConflicts": conflicts,
