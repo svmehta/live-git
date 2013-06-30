@@ -57,7 +57,7 @@ Meteor.Router.add({
     var workingCopy = WorkingCopies.findOne(query);
 
     if (!workingCopy) {
-      query.unpushedCommits = []; //init empty array
+      query.commitIds = []; //init empty array
       var workingCopyId = WorkingCopies.insert(query);
       var updates = apiHelpers.insertNewCommits (workingCopyId, clientCommits);
       WorkingCopies.update({_id : workingCopyId}, updates);
