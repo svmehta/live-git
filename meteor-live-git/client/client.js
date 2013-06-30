@@ -50,7 +50,7 @@ Template.main.users = function() {
 
     // TODO: total hack for demo purposes
     var lastPushedCommit = Commits.findOne (
-      {repositoryId : repoId, userId : user._id, invalid: true},
+      { userId : user._id, invalid: true},
       { sort : {timestamp : -1}}
     );
 
@@ -85,12 +85,12 @@ Template.main.users = function() {
 
 
 var processCommitData = function(commit, workingCopy, isDone) {
-  // var commit = Commits.findOne({ _id: commitId });
   commit.timeago = moment.unix(commit.timestamp).fromNow();
   commit.branchName = workingCopy.branchName;
   commit.numBehind = workingCopy.fileStats.numBehind;
   commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
   commit.iconType = isDone ? "push" : "save";
+  commit.allDone = isDone;
   // console.log(commit);
   return commit;
 };
@@ -145,7 +145,6 @@ Template.user.topItem = function() {
 
   } else if (this.lastPushedCommit) {
     return processCommitData(this.lastPushedCommit, this.workingCopy, true);
-
   } else {
     return false;
   }
