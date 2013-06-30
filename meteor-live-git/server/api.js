@@ -41,13 +41,6 @@ Meteor.Router.add({
   '/update' : function() {
     var body = this.request.body;
     var clientCommits = body.unpushedCommits;
-
-    console.log ('body', body)
-    console.log ('clientCommits', clientCommits)
-    if (!clientCommits) {
-      return [400, 'must provide commits'];
-    }
-
     var userId = apiHelpers.getUserForComputer (body.computerId);
 
     if (!userId) {
@@ -71,7 +64,7 @@ Meteor.Router.add({
     } else {
       var updates = apiHelpers.insertNewCommits (workingCopy._id, clientCommits);
       WorkingCopies.update({_id : workingCopy._id}, updates);
-      return [200, 'new working copy created'];
+      return [200, 'updated existing working copy'];
     }
   }
 
@@ -96,8 +89,6 @@ var apiHelpers = {
 
     var commits = Commits.find ({workingCopyId : workingCopyId}).fetch();
     var hashes = _.map (commits, function (commit) { return commit.clientHash});
-    console.log ('existing commits', commits);
-    console.log ('existing hashes', hashes);
 
     clientCommits.forEach (function (commit) {
       if (hashes.indexOf (commit.clientHash) === -1) {
