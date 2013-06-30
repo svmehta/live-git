@@ -4,6 +4,7 @@
 
   <link href='http://fonts.googleapis.com/css?family=Raleway:400,100,600,900' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Goudy+Bookletter+1911' rel='stylesheet' type='text/css'>
+
   <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
 </head>
 
@@ -12,15 +13,19 @@
 
 <template name="main">
   <div class="container">
-    {{#with repository}}
-      <h1>{{name}}</h1>
-    {{/with}}
+    {{#if showRepository}}
+      {{#with repository}}
+        <h1>{{name}}</h1>
+      {{/with}}
 
-    {{#each users}}
-      {{> user}}
-    {{/each}}
+      {{#each users}}
+        {{> user}}
+      {{/each}}
+    {{else}}
+      <h1>Welcome to Git Dashboard</h1>
+      <p>Please provide a repository URL!</p>
+    {{/if}}
   </div>
-
 </template>
 
 
@@ -29,66 +34,21 @@
     <div class="row">
       <div class="span2">
         <div class="profile-container">
-          <img src="http://www.gravatar.com/avatar/{{this.gravatarHash}}" class="profile-image">
+          <img src="http://www.gravatar.com/avatar/{{this.gravatarHash}}" title="{{this.user.name}}" class="profile-image">
         </div>
       </div>
       <div class="span9">
-        <div class="featured">
-          <div class="branch">
-            git-dashboard
-          </div>
-          <div class="main-block">
-            <div class="action-icon save"></div>
-            <div class="main quote">
-              <div class="item">
-                Here is my commit comment.
-                <div class="time-stamp">
-                  3 seconds ago
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {{#with uncommittedFiles}}
+          {{> new-files-row}}
+        {{/with}}
+        {{#with topItem}}
+          {{> featured-commit-row}}
+        {{/with}}
+
         <div class="history">
-          <div class="item">
-            <div class="action-icon save"></div>
-            <div class="branch">
-              git-dashboard
-            </div>
-            <div class="update-text quote">
-              Updated responsive styles for iPhone
-            </div>
-            <div class="time-stamp">
-              3 seconds ago
-            </div>
-            <div class="updated-files">
-              live-git.nginx.conf, model.js, git_helpers.py
-            </div>
-          </div>
-          <div class="item">
-            <div class="action-icon pull"></div>
-            <div class="branch">
-              git-dashboard
-            </div>
-            <div class="update-text">
-              Andrew pulled
-            </div>
-            <div class="time-stamp">
-              38 minutes ago
-            </div>
-          </div>
-          <div class="item">
-            <div class="action-icon push"></div>
-            <div class="branch behind">
-              live-git-17
-            </div>
-            <div class="update-text quote">
-              Fixed button bug.
-            </div>
-            <div class="time-stamp">
-              22 hours ago
-            </div>
-          </div>
+          {{#each olderItems}}
+            {{> history-row}}
+          {{/each}}
         </div>
         <div class="more">
           <div class="more-divider"></div>
@@ -97,6 +57,73 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</template>
+
+
+<template name="new-files-row">
+  <div class="featured">
+    <div class="branch {{this.branchStyle}}">
+      {{this.branchName}}
+    </div>
+    <div class="main-block">
+      <div class="action-icon {{this.iconType}}"></div>
+      <div class="main write">
+        <div class="item">
+          {{this.firstFile.file}}
+          <div class="time-stamp">
+            {{this.firstFile.timeago}}
+          </div>
+        </div>
+        {{#each this.files}}
+          <div class="item item-two">
+            {{this.file}}
+            <div class="time-stamp">
+              {{this.timeago}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<template name="featured-commit-row">
+  <div class="featured">
+    <div class="branch {{this.branchStyle}}">
+      {{this.branchName}}
+    </div>
+    <div class="main-block">
+      <div class="action-icon {{this.iconType}}"></div>
+      <div class="main quote">
+        <div class="item">
+          {{this.message}}
+          <div class="time-stamp">
+            {{this.timeago}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<template name="history-row">
+  <div class="item">
+    <div class="action-icon {{this.iconType}}"></div>
+    <div class="branch {{this.branchStyle}}">
+      {{this.branchName}}
+    </div>
+    <div class="update-text quote">
+      {{this.message}}
+    </div>
+    <div class="time-stamp">
+      {{this.timeago}}
+    </div>
+    <div class="updated-files">
+      {{this.fileList}}
     </div>
   </div>
 </template>

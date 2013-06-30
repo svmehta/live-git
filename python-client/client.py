@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import requests
 import githelpers
 import argparse
@@ -9,6 +10,22 @@ import json
 
 BOOTSTRAP_DOTFILE = ".gitlive"
 SERVER_ROOT = "http://localhost:3000"
+
+
+# http://stackoverflow.com/a/4104188
+def runOnce(f):
+    def wrapper(*args, **kwargs):
+        if not wrapper.has_run:
+            wrapper.has_run = True
+            return f(*args, **kwargs)
+    wrapper.has_run = False
+    return wrapper
+
+@runOnce
+def printWelcomeMessage(repositoryId):
+    print 'Watching directory for changes (CTRL-C to exit)'
+    print 'Your project dashboard is located at ' + SERVER_ROOT + '/' + repositoryId
+
 
 def main():
     # Handle command line arguments
@@ -28,18 +45,16 @@ def main():
         user_info = githelpers.get_computer_info(git_directory)
         resp = _query_endpoint("bootstrap", user_info).json()
         userId, computerId, repositoryId = resp["userId"], resp["computerId"], resp["repositoryId"]
+        printWelcomeMessage(repositoryId)
         with open(bootstrap_path, "w") as f:
             f.write(computerId)
             f.write("\n")
             f.write(userId)
-            f.write("\n")
-            f.write(repositoryId)
     else:
         with open(bootstrap_path, "r") as f:
             s = f.read()
-            computerId, userId, repositoryId = s.strip().split("\n")
+            computerId, userId = s.strip().split("\n")
 
-    print 'Your project dashboard is located at ' + SERVER_ROOT + '/' + repositoryId
 
     while True:
         working_copy = githelpers.get_working_copy({
@@ -47,8 +62,10 @@ def main():
             "computerId": computerId
         }, git_directory)
 
-        working_resp = _query_endpoint("update", working_copy)
+        working_resp = _query_endpoint("update", working_copy).json()
+        printWelcomeMessage(working_resp["repositoryId"])
         time.sleep (60)
+
 
 def _query_endpoint(path, body={}):
     """
@@ -62,4 +79,8 @@ def _query_endpoint(path, body={}):
 
 
 if __name__ == '__main__':
-    main()
+   try:
+      main()
+   except KeyboardInterrupt:
+      print "\nStopped!"
+      sys.exit()
