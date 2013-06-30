@@ -39,10 +39,10 @@ Template.main.users = function() {
   var userArray = [];
 
   // TODO: total hack for demo purposes
-  var lastPushedCommit = Commits.find (
+  var lastPushedCommit = Commits.findOne (
     {repositoryId : repoId, userId : userId, invalid: true},
     { sort : {timestamp ; -1}}
-  ).fetch();
+  );
 
   copies.forEach(function(copy) {
     copy.commits = Commits.find(
