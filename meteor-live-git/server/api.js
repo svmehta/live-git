@@ -1,7 +1,7 @@
 Meteor.Router.add({
 
   '/bootstrap' : function () {
-    var body = this.request.body;
+    var body = JSON.parse(this.request.body);
 
     var remoteUrl = body.remoteUrl;
     if (!remoteUrl) {
@@ -43,7 +43,7 @@ Meteor.Router.add({
    * update the state of the workingCopy
    */
   '/update' : function() {
-    var body = this.request.body;
+    var body = JSON.parse(this.request.body);
     var clientCommits = body.unpushedCommits;
 
     if (!body.computerId) {
@@ -71,6 +71,8 @@ Meteor.Router.add({
 
     var workingCopy = WorkingCopies.findOne(query);
     var workingCopyId;
+
+    console.log (body);
 
     if (!workingCopy) {
       query.commitIds = []; //init empty array
@@ -115,11 +117,21 @@ var apiHelpers = {
   },
 
   getUserForComputer : function (computerId) {
-    return Computers.findOne ({_id : computerId}).userId;
+    var user = Computers.findOne ({_id : computerId});
+    if (user) {
+      return user._id;
+    } else {
+      return null;
+    }
   },
 
   getRepoIdForUrl : function (remoteUrl) {
-    return Repositories.findOne ({url : remoteUrl})._id;
+    var repo = Repositories.findOne ({url : remoteUrl});
+    if (repo) {
+      return repo._id;
+    } else {
+      return null;
+    }
   },
 
   syncCommits : function (workingCopyId, clientCommits) {
