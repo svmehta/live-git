@@ -58,8 +58,10 @@ Meteor.Router.add({
 
     if (!userId) {
       return [400, 'user doesnt exist for computerId'];
-    } else if (!repositoryId) {
-      return [400, 'repository doesnt exist for remoteUrl'];
+    }
+
+    if (!repositoryId) {
+      repositoryId = Repositories.insert ({url : body.remoteUrl});
     }
 
     //test
@@ -83,7 +85,7 @@ Meteor.Router.add({
       workingCopyId = WorkingCopies.insert(query);
     } else {
       workingCopyId = workingCopy._id;
-      var update = { 
+      var update = {
         $set : {
           untrackedFiles : body.untrackedFiles,
           timestamp : Date.now(),
@@ -104,7 +106,7 @@ Meteor.Router.add({
       WorkingCopies.update({_id : workingCopyId}, updates.add);
     }
 
-    return 200;
+    return [200, JSON.stringify ({repositoryId : repositoryId})];
   }
 
 });
