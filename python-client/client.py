@@ -9,7 +9,7 @@ import time
 import json
 
 BOOTSTRAP_DOTFILE = ".gitdashboard/watcher_config"
-SERVER_ROOT = "http://localhost:3000"
+SERVER_ROOT = "http://gitdashboard.com"
 
 
 # http://stackoverflow.com/a/4104188
