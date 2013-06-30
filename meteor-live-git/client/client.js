@@ -209,7 +209,7 @@ Template.user.fileDiff = function() {
       }
     });
   }
-  if (this.workingCopy.commits && this.workingCopy.commits[0].diff) {
+  if (this.workingCopy.commits && this.workingCopy.commits[0] && this.workingCopy.commits[0].diff) {
     this.workingCopy.commits[0].diff.forEach(function(diff) {
       if (Session.equals("openDiffFile", diff.file)) {
         output = diff.content;
@@ -280,7 +280,7 @@ Template.branchChart.hasCommitsAhead = function() {
 
 Template.branchChart.commitsAhead = function() {
   var html = "";
-  for (var i = 0; i < this.workingCopy.fileStats.numAhead; i ++) {
+  for (var i = 0; i <= this.workingCopy.fileStats.numAhead; i ++) {
     html += "<div class=\"circle bottom-row\"></div>";
   }
   return html;
