@@ -95,10 +95,13 @@ var apiHelpers = {
     };
 
     var commits = Commits.find ({workingCopyId : workingCopyId}).fetch();
-    var hashes = _.filter (commits, function (commit) { return commit.clientHash});
+    var hashes = _.map (commits, function (commit) { return commit.clientHash});
+    console.log ('existing commits', commits);
+    console.log ('existing hashes', hashes);
 
     clientCommits.forEach (function (commit) {
       if (hashes.indexOf (commit.clientHash) === -1) {
+        commit.workingCopyId = workingCopyId;
         var commitId = Commits.insert (commit);
         newCommits.push (commitId);
       } else {
