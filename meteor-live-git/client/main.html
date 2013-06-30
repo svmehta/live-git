@@ -124,7 +124,9 @@
         </div>
       </div>
       <div class="updated-files">
-        {{this.fileList}}
+        {{#each this.files}}
+          <div class="updated-file">{{this}}</div>
+        {{/each}}
       </div>
     </div>
   </div>
@@ -144,7 +146,9 @@
       {{this.timeago}}
     </div>
     <div class="updated-files">
-      {{this.fileList}}
+      {{#each this.files}}
+        <div class="updated-file">{{this}}</div>
+      {{/each}}
     </div>
   </div>
 </template>

@@ -84,7 +84,6 @@ var processCommitData = function(commit, workingCopy) {
   commit.numBehind = workingCopy.fileStats.numBehind;
   commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
   commit.iconType = "save";
-  commit.fileList = commit.files.join(", ");
   // console.log(commit);
   return commit;
 };
