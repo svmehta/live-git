@@ -21,7 +21,7 @@ Before running the above, don't forget to set a security group (allowing in port
 ```
 sudo add-apt-repository ppa:chris-lea/node.js \
 && sudo apt-get update \
-&& sudo apt-get install -y git nodejs`
+&& sudo apt-get install -y git nodejs
 ```
 
 Also, do the git clone into `/var/www/live-git` and run these after cloning:
