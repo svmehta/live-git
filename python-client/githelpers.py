@@ -90,11 +90,9 @@ def get_working_copy(params, dirpath):
     # Pull statistics from the zsh git plugin (i.e. number of untracked)
     file_stats = gitstatus.get_statistics(dirpath)
 
-    # Unstaged changes for added files
+    # Unstaged changes for added files (aka git diff)
     current_diffs_raw = repo.index.diff(None, create_patch=True)
-    current_diffs = []
-    for diff in current_diffs_raw:
-       filename = diff.b_blob.name 
+    current_diffs = _difflist_to_dictlist(current_diffs_raw)
 
     working_copy = {
             "computerId": params["computerId"],
@@ -103,8 +101,10 @@ def get_working_copy(params, dirpath):
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
             "clientDir": dirpath,
-            "fileStats": file_stats
+            "fileStats": file_stats,
+            "gitDiff": current_diffs
     }
+    print current_diffs
     return working_copy
 
 def _commit_to_dict(c, previous_commit=None):

@@ -28,7 +28,6 @@ def main():
     # Bootstrap file: expect computerId on first line, userId on second
     if not os.path.exists(bootstrap_path):
         user_info = githelpers.get_computer_info(git_directory)
-        print user_info
         resp = _query_endpoint("bootstrap", user_info).json()
         userId, computerId = resp["userId"], resp["computerId"]
         with open(bootstrap_path, "w") as f:
@@ -47,7 +46,6 @@ def main():
 
     working_resp = _query_endpoint("update", working_copy)
 
-    print working_copy  # TODO remove
 
 def _query_endpoint(path, body={}):
     """
