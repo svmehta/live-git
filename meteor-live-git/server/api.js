@@ -1,10 +1,8 @@
 Meteor.Router.add({
 
   '/bootstrap' : function () {
-    console.log ('bootstrap')
+    console.log ('bootstrap');
     var body = this.request.body;
-
-    console.log (body)
 
     // create the user if it doesn't exist
     var userId = Users.findOne ({name : body.name, email : body.email});
@@ -35,15 +33,21 @@ Meteor.Router.add({
   },
 
   '/update' : function() {
-    console.log (this.request.body)
-    var body = this.request.body;
-    var clientGitData = body.gitData;
+    console.log ('update')
+    var body = this.request.body.workingCopy;
+    var clientCommits = body.unpushedCommits;
 
-    if (!clientGitData) {
-      return [400, 'must provide gitData'];
+    console.log ('body', body)
+    console.log ('clientCommits', clientCommits)
+    if (!clientCommits) {
+      return [400, 'must provide commits'];
     }
 
     var user = apiHelpers.getUserForComputer (body.computerId);
+
+    if (!user) {
+      return [500, 'user doesnt exist for computerId'];
+    }
 
     var query = {
       computerId : body.computerId,
@@ -56,11 +60,11 @@ Meteor.Router.add({
 
     if (!workingCopy) {
       var workingCopyId = WorkingCopies.insert(query);
-      var updates = apiHelpers.insertNewCommits (workingCopyId, clientGitData);
+      var updates = apiHelpers.insertNewCommits (workingCopyId, clientCommits);
       WorkingCopies.update({_id : workingCopyId}, updates);
       return [200, 'new working copy created'];
     } else {
-      var updates = apiHelpers.insertNewCommits (workingCopy._id, clientGitData);
+      var updates = apiHelpers.insertNewCommits (workingCopy._id, clientCommits);
       WorkingCopies.update({_id : workingCopy._id}, updates);
       return [200, 'new working copy created'];
     }
@@ -76,30 +80,28 @@ var apiHelpers = {
   },
 
   getUserForComputer : function (computerId) {
-    return Users.findOne ({computerId : computerId});
+    return Computers.findOne ({_id : computerId}).userId;
   },
   
-  insertNewCommits : function (workingCopyId, clientGitData) {
+  insertNewCommits : function (workingCopyId, clientCommits) {
     var newCommits = [];
     var updates = {
       $addToSet : {commitIds : {$each : newCommits}}
     };
 
     var commits = Commits.find ({workingCopyId : workingCopyId}).fetch();
+    var hashes = _.filter (commits, function (commit) { return commit.clientHash});
 
-    if (commits.length) {      
-      var hashes = _.filter (commits, function (commit) { return commit.clientHash});
-      
-      clientGitData.commits.forEach (function (commit) {
-        if (hashes.indexOf (commit.clientHash) !== -1) {
-          var commitId = Commits.insert (commit);
-          newCommits.push (commitId);
-        } else {
-          //TODO: do we need to sync these to make sure stuff hasn't changed?
-        }
-      });
-    }
+    clientCommits.forEach (function (commit) {
+      if (hashes.indexOf (commit.clientHash) === -1) {
+        var commitId = Commits.insert (commit);
+        newCommits.push (commitId);
+      } else {
+        //TODO: do we need to sync these to make sure stuff hasn't changed?
+      }
+    });
 
     return updates;
   }
+
 }
