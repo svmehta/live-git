@@ -97,7 +97,7 @@ def get_working_copy(params, dirpath):
     # Unstaged changes for added files (aka git diff)
     try:
         current_diffs_raw = repo.index.diff(None, create_patch=True)
-        current_diffs = _difflist_to_dictlist(current_diffs_raw, last_modified=True)
+        current_diffs = _difflist_to_dictlist(current_diffs_raw)
     except Exception as e:
         print "There was an error getting `git diff`: %s" % str(e)
         current_diffs = [] 
@@ -146,11 +146,9 @@ def _commit_to_dict(c, previous_commit=None):
     }
     return commit_info
 
-def _difflist_to_dictlist(diffs, last_modified=False):
+def _difflist_to_dictlist(diffs):
     """
     Converts a list of diffs to a list of dicts to send to the server
-
-    If last_modified is True, it will add lastModified information to the dictionary
     """
     dictlist = []
     for diff in diffs:
@@ -166,12 +164,11 @@ def _difflist_to_dictlist(diffs, last_modified=False):
         current_dict = {
             "file": filename, 
             "content": diff.diff,
-            "lastModified": last_modified
         }
 
-        if last_modified and os.path.exists(abspath):
-            current_dict['lastModified'] = os.path.getmtime(abspath)
-            current_dict['timeSinceModified'] = int(time.time()) - current_dict['lastModified']
+        if os.path.exists(abspath):
+            current_dict['lastModified'] = os.path.getmtime(abspath) * 1000
+            current_dict['timeSinceModified'] = int(time.time() * 1000) - current_dict['lastModified']
 
 
         dictlist.append(current_dict)

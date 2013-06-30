@@ -78,7 +78,7 @@ Template.user.uncommittedFiles = function() {
 
   if (this.workingCopy.gitDiff.length) {
     this.workingCopy.gitDiff.forEach(function(file) {
-      file.timeago = wc_timeago;
+      file.timeago = moment(file.lastModified).fromNow();  // Last modified
       result.files.push(file);
     });
     result.firstFile = result.files.shift();
