@@ -245,6 +245,23 @@ Template['new-files-row'].events({
 });
 
 
+Template['featured-commit-row'].events({
+  'click .file': function (evt) {
+    var rel = evt.target.getAttribute("rel");
+    if (!rel) { rel = evt.target.parentElement.getAttribute("rel"); }
+    if (rel) {
+      if (Session.equals("openDiffCopy", this.copy_id) && Session.equals("openDiffFile", rel)) {
+        Session.set("openDiffCopy", null);
+        Session.set("openDiffFile", null);
+      } else {
+        Session.set("openDiffCopy", this.copy_id);
+        Session.set("openDiffFile", rel);
+      }
+    }
+  }
+});
+
+
 Template.branchChart.hasCommitsAhead = function() {
   if (!this.workingCopy) { console.log("No working copy to inspect!"); }
 
