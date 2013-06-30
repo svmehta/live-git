@@ -41,7 +41,7 @@ Template.main.users = function() {
   // TODO: total hack for demo purposes
   var lastPushedCommit = Commits.findOne (
     {repositoryId : repoId, userId : userId, invalid: true},
-    { sort : {timestamp ; -1}}
+    { sort : {timestamp : -1}}
   );
 
   copies.forEach(function(copy) {
