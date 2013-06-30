@@ -122,6 +122,7 @@ def _commit_to_dict(c, previous_commit=None):
         previous_commit: another pygit2 commit object, used
             to find a diff
     """
+    ""
     if previous_commit: 
         current_diffs = c.diff(previous_commit, create_patch=True)
         changed_files = [d.a_blob.name for d in current_diffs if d.a_blob]
