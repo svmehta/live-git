@@ -1,6 +1,7 @@
 Meteor.Router.add({
 
   '/bootstrap' : function () {
+    console.log ('bootstrap')
     var body = this.request.body;
 
     // create the user if it doesn't exist
@@ -12,25 +13,19 @@ Meteor.Router.add({
           if (err) {
             return (err);
           } else {
-            // create the computer object
-            apiHelpers.createComputer (userId, function (err, compId) {
-              if (err) {
-                return [500, 'error creating computer model'];
-              } else {
-                return [200, {compId: compId}];
-              }
-            });
+            var compId = apiHelpers.createComputer (userId);
+            if (!compId) {
+              return [500, 'could not create computer'];
+            }
+            return [200, JSON.stringify ({computerId : compId})];
           }
         });
     } else {
-      // create the computer object
-      apiHelpers.createComputer (userId, function (err, compId) {
-        if (err) {
-          return [500, 'error creating computer model'];
-        } else {
-          return [200, {compId: compId}];
-        }
-      });
+      var compId = apiHelpers.createComputer (userId);
+      if (!compId) {
+        return [500, 'could not create computer'];
+      }
+      return [200, JSON.stringify ({computerId : compId})];
     }
   },
   
