@@ -4,6 +4,8 @@ Meteor.Router.add({
     console.log ('bootstrap')
     var body = this.request.body;
 
+    console.log (body)
+
     // create the user if it doesn't exist
     var userId = Users.findOne ({name : body.name, email : body.email});
 
@@ -12,7 +14,7 @@ Meteor.Router.add({
     }
 
     var compId = apiHelpers.createComputer (userId);
-    return [200, JSON.stringify ({computerId : compId})];
+    return [200, JSON.stringify ({computerId : compId, userId : userId})];
   },
   
   /*
@@ -33,6 +35,7 @@ Meteor.Router.add({
   },
 
   '/update' : function() {
+    console.log (this.request.body)
     var body = this.request.body;
     var clientGitData = body.gitData;
 
