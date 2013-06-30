@@ -9,7 +9,7 @@ import time
 import json
 
 BOOTSTRAP_DOTFILE = ".gitdashboard/watcher_config"
-SERVER_ROOT = "http://gitdashboard.com"
+SERVER_ROOT = "http://localhost:3000"
 
 
 # http://stackoverflow.com/a/4104188
@@ -33,6 +33,7 @@ def main():
     parser.add_argument("-d", dest="git_directory", default=None)
     parser.add_argument("-p", dest="poll_timeout", type=int, default=5)
     parser.add_argument("--local", action="store_true")
+
 
     args = parser.parse_args()
 

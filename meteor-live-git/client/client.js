@@ -14,6 +14,8 @@ Template.main.repository = function() {
     if (!repo.name) {
       var matches = /\/([^\/]+?)(?:.git)?$/.exec(repo.url);
       repo.name = matches[1];
+
+      if (repo.name == 'live-git') { repo.name = "Git Dashboard"; }
     }
 
     Session.set("searchedForRepo", true);
@@ -53,6 +55,8 @@ Template.main.users = function() {
       { userId : user._id, invalid: true},
       { sort : {timestamp : -1}}
     );
+
+    console.log (user.email.trim().toLowerCase())
 
     userArray.push({
       "user": user,
@@ -203,8 +207,21 @@ Template.user.fileDiff = function() {
       output = diff.content;
     }
   });
+  this.workingCopy.commits[0].diff.forEach(function(diff) {
+    if (Session.equals("openDiffFile", diff.file)) {
+      output = diff.content;
+    }
+  });
+
   if (output) { return hljs.highlight("diff", output).value; }
 };
+
+Template.user.hasCommitsAhead = function() {
+  if (!this.workingCopy) { console.log("No working copy to inspect!"); }
+
+  return (this.workingCopy.fileStats.numAhead > 0);
+};
+
 
 
 Template.user.events({
@@ -226,7 +243,23 @@ Template['new-files-row'].events({
         Session.set("openDiffCopy", null);
         Session.set("openDiffFile", null);
       } else {
-      console.log(this.copy_id, rel)
+        Session.set("openDiffCopy", this.copy_id);
+        Session.set("openDiffFile", rel);
+      }
+    }
+  }
+});
+
+
+Template['featured-commit-row'].events({
+  'click .file': function (evt) {
+    var rel = evt.target.getAttribute("rel");
+    if (!rel) { rel = evt.target.parentElement.getAttribute("rel"); }
+    if (rel) {
+      if (Session.equals("openDiffCopy", this.copy_id) && Session.equals("openDiffFile", rel)) {
+        Session.set("openDiffCopy", null);
+        Session.set("openDiffFile", null);
+      } else {
         Session.set("openDiffCopy", this.copy_id);
         Session.set("openDiffFile", rel);
       }
