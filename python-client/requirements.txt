@@ -1,4 +1,4 @@
 
-gitpython==0.3.2
+GitPython==0.3.2.RC1
 requests==1.2.3
-python-daemon==1.6
+#python-daemon==1.6
