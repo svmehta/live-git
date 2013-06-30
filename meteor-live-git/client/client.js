@@ -210,6 +210,13 @@ Template.user.fileDiff = function() {
   if (output) { return hljs.highlight("diff", output).value; }
 };
 
+Template.user.hasCommitsAhead = function() {
+  if (!this.workingCopy) { console.log("No working copy to inspect!"); }
+
+  return (this.workingCopy.fileStats.numAhead > 0);
+};
+
+
 
 Template.user.events({
   'click .more-text': function (evt) {
@@ -230,7 +237,6 @@ Template['new-files-row'].events({
         Session.set("openDiffCopy", null);
         Session.set("openDiffFile", null);
       } else {
-      console.log(this.copy_id, rel)
         Session.set("openDiffCopy", this.copy_id);
         Session.set("openDiffFile", rel);
       }
