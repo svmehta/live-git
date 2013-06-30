@@ -38,12 +38,6 @@ Template.main.users = function() {
 
   var userArray = [];
 
-  // TODO: total hack for demo purposes
-  var lastPushedCommit = Commits.findOne (
-    {repositoryId : repoId, userId : userId, invalid: true},
-    { sort : {timestamp : -1}}
-  );
-
   copies.forEach(function(copy) {
     copy.commits = Commits.find(
       { _id: { $in: copy.commitIds } },
@@ -51,7 +45,14 @@ Template.main.users = function() {
     ).fetch();
 
     var user = Users.findOne({ _id: copy.userId })
+
     if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
+
+    // TODO: total hack for demo purposes
+    var lastPushedCommit = Commits.findOne (
+      {repositoryId : repoId, userId : user._id, invalid: true},
+      { sort : {timestamp : -1}}
+    );
 
     userArray.push({
       "user": user,
