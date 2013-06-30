@@ -4,6 +4,8 @@ import daemon
 import os
 import requests
 import githelpers
+import argparse
+
 BOOTSTRAP_DOTFILE = ".gitlive"
 SERVER_ROOT = "http://localhost:3000"
 
@@ -11,12 +13,19 @@ SERVER_ROOT = "http://localhost:3000"
 #     print "foo"
 
 def main():
+    # Handle command line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", dest="git_directory", default=None)
+    args = parser.parse_args()
+
+    git_directory = os.path.abspath(args.git_directory) or os.getcwd()
+
     # Only bootstrap if we don't already have it
     bootstrap_path = os.path.join(os.path.expanduser("~"), BOOTSTRAP_DOTFILE)
    
     # Bootstrap file: expect computerId on first line, userId on second
     if not os.path.exists(bootstrap_path):
-        user_info = githelpers.get_computer_info()["user"]
+        user_info = githelpers.get_computer_info(git_directory)["user"]
         print user_info
         resp = _query_endpoint("bootstrap", user_info).json()
         userId, computerId = resp["userId"], resp["computerId"]
@@ -32,7 +41,7 @@ def main():
     working_copy = githelpers.get_working_copy({
         "userId": userId,
         "computerId": computerId
-    })
+    }, git_directory)
 
     working_resp = _query_endpoint("update", working_copy)
 
