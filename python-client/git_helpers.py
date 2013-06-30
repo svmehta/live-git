@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 """
-
+Scripts for retrieving data about the git repository
 """
 
 from git import *
 import os, sys
 
 def get_info():
+    """
+    Returns:
+        A single dict with keys:
+            computer
+            workingCopy
+    """
+
     # Scripting part (move into main() etc functions later)
     cwd = os.getcwd()
     git_directory = os.path.join(os.getcwd() + "/.git/")
@@ -36,56 +43,96 @@ def get_info():
 
     results["computer"] = computer
 
-    # Branch 
+    # Gather branch information
     current_branch = repo.active_branch
-    current_branch_name = current_branch.name
     untracked = repo.untracked_files
 
+    # In order to make sure that we have up to date information, we fetch
+    origin_remote = next((r for r in repo.remotes if r.name == 'origin'), None)
+    if not origin_remote:
+        print "This tool requires a remote branch named 'origin'"
+        sys.exit(1)
 
-    # Remotes
-    raw_remotes = repo.remotes
+    origin_remote.fetch()
+
+    # Gather information about unpushed commits
+    unpushed_commits = {}
+
+    raw_unpushed_str = repo.git.log("origin/%s..HEAD" % current_branch.name)
+    unpushed_hexshas = [line.split(" ")[1] for line in raw_unpushed_str.split('\n') 
+            if line.startswith("commit")]
+    unpushed_objs = [repo.commit(h) for h in unpushed_hexshas]
+
+    previous_commit = None # The first commit to diff should be the last committed to the remote
+    unpushed_commits = []
+    for u in unpushed_objs:
+        unpushed_commits.append(commit_to_dict(u, previous_commit))
+        previous_commit = u
 
     # Information about the commits on that branch
     # Grab the commits in reverse chronological order
     commits = []
     previous_commit = None  # Find diff relative to previous commit
     for c in repo.iter_commits():
-        current_diffs = c.diff(previous_commit, create_patch=True)
-        changed_files = [d.a_blob.name for d in current_diffs]
-        detailed_diffs = []
-
-        for diff in current_diffs:
-            # For now, ignore renamed, deleted
-            if diff.deleted_file or diff.renamed:
-                continue
-            # TODO exclude binary files (like images)
-
-            # We can take a or b for the two diffs: 
-            # take b, since new files don't have an a_blob
-            filename = d.b_blob.name  
-            detailed_diffs.append({"filename": filename, "content": diff.diff })
-
-        d = {
-                "hash": c.hexsha,
-                "author": {
-                    "name": c.author.name,
-                    "email": c.author.email
-                },
-                "message": c.message,
-                "timestamp": c.committed_date
-        }
-
-        commits.append(d)
+        commit_info = commit_to_dict(c, previous_commit)
+        commits.append(commit_info)
         previous_commit = c
 
     working_copy = {
             "timestamp": "TODO",  # TODO record last time sent from client
             "branchName": current_branch.name,
             "untrackedFiles": untracked,
+            "unpushedCommits": unpushed_commits,
             "commits": commits,
             "clientDir": cwd
     }
 
     results["workingCopy"] = working_copy
 
-    print results
+    return results
+
+def commit_to_dict(c, previous_commit=None):
+    """ 
+    Converts a commit object to a dict that we can send to the server i
+
+    Args: 
+        c: pygit2 commit object
+        previous_commit: another pygit2 commit object, used
+            to find a diff
+    """
+    current_diffs = c.diff(previous_commit, create_patch=True)
+    changed_files = [d.a_blob.name for d in current_diffs]
+    detailed_diffs = []
+
+    for diff in current_diffs:
+        # For now, ignore renamed, deleted files from detailed_diffs
+        if diff.deleted_file or diff.renamed:
+            continue
+
+        # We can take a or b for the two diffs: 
+        # take b, since new files don't have an a_blob
+        filename = d.b_blob.name  
+        detailed_diffs.append({
+            "filename": filename, 
+            "content": diff.diff }
+            )
+
+    commit_info = {
+            "hash": c.hexsha,
+            "author": {
+                "name": c.author.name,
+                "email": c.author.email
+            },
+            "message": c.message,
+            "timestamp": c.committed_date,
+            "files": changed_files,
+            "diff": detailed_diffs
+    }
+    return commit_info
+
+
+if __name__ == '__main__':
+    get_info()
+    import json
+    print json.dumps(get_info())
+
