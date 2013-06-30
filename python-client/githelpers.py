@@ -107,23 +107,27 @@ def _commit_to_dict(c, previous_commit=None):
         previous_commit: another pygit2 commit object, used
             to find a diff
     """
-    current_diffs = c.diff(previous_commit, create_patch=True)
-    changed_files = [d.a_blob.name for d in current_diffs if d.a_blob]
-    detailed_diffs = []
+    if previous_commit: 
+        current_diffs = c.diff(previous_commit, create_patch=True)
+        changed_files = [d.a_blob.name for d in current_diffs if d.a_blob]
+        detailed_diffs = []
 
-    for diff in current_diffs:
-        # For now, ignore renamed, deleted files from detailed_diffs
-        if diff.deleted_file or diff.renamed:
-            continue
+        for diff in current_diffs:
+            # For now, ignore renamed, deleted files from detailed_diffs
+            if diff.deleted_file or diff.renamed:
+                continue
 
-        # We can take a or b for the two diffs: 
-        # take b, since new files don't have an a_blob
-        filename = d.b_blob.name  
-        detailed_diffs.append({
-            "file": filename, 
-            "content": diff.diff 
-            }
-        )
+            # We can take a or b for the two diffs: 
+            # take b, since new files don't have an a_blob
+            filename = d.b_blob.name  
+            detailed_diffs.append({
+                "file": filename, 
+                "content": diff.diff 
+                }
+            )
+    else:
+        detailed_diffs = []  # TODO make this based on the last pushed commit
+        changed_files = []
 
     commit_info = {
             "clientHash": c.hexsha,
