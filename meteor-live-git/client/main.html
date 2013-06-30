@@ -53,6 +53,12 @@
 
         {{> branchChart}}
 
+        {{#if showingDiff}}
+          <div class="file-diff">
+            <pre>{{fileDiff}}</pre>
+          </div>
+        {{/if}}
+
         <div class="history">
           {{#each olderItems}}
             {{> history-row}}
@@ -83,7 +89,7 @@
     <div class="main-block">
       <div class="action-icon {{this.iconType}}"></div>
       <div class="main write">
-        <div class="item file">
+        <div class="item file" rel="{{this.firstFile.file}}">
           {{this.firstFile.file}}
           <br>
           <div class="time-stamp">
@@ -91,7 +97,7 @@
           </div>
         </div>
         {{#each this.files}}
-          <div class="item item-two file">
+          <div class="item item-two file" rel="{{this.file}}">
             {{this.file}}
             <br>
             <div class="time-stamp">
