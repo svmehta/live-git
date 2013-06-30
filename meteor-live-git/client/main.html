@@ -45,14 +45,16 @@
           {{> featured-commit-row}}
         {{/with}}
 
+        <div class="item item-two branch-box">
         {{> branchChart}}
+      </div>
 
         <div class="history">
           {{#each olderItems}}
             {{> history-row}}
           {{/each}}
         </div>
-        
+
         <div class="more">
           <div class="more-divider"></div>
           <div class="more-text">
