@@ -1,6 +1,6 @@
 # live-git
 
-A real-time view of the Git status of your team
+A real-time view of the Git status of your team!
 
 ## To watch your working copies
 
