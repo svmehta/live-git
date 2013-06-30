@@ -8,7 +8,7 @@ Just run the install script from inside a cloned Git repository:
 
 ```
 cd /path/to/working/copy
-curl https://raw.github.com/svmehta/live-git/master/install.sh | /bin/bash
+curl -L http://gitdashboard.com/install | /bin/bash
 ```
 
 This will create the directory `~/.gitdashboard`, install everything inside a virtualenv there, and run the watcher script. (To uninstall, just delete the directory.)
