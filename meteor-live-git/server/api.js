@@ -24,17 +24,7 @@ Meteor.Router.add({
    * let client know last commit in db for a given branch
    */
   '/status': function() {
-    var body = this.request.body;
-    var userId = apiHelpers.getUserForComputer (body.computerId);
-
-    var query = {
-      computerId : body.computerId,
-      branchName : body.branchName,
-      clientDir : body.clientDir,
-      userId : userId
-    };
-
-    return WorkingCopies.findOne(query);
+    //TODO
   },
 
   /*
@@ -63,11 +53,11 @@ Meteor.Router.add({
     if (!workingCopy) {
       query.commitIds = []; //init empty array
       var workingCopyId = WorkingCopies.insert(query);
-      var updates = apiHelpers.insertNewCommits (workingCopyId, clientCommits);
+      var updates = apiHelpers.syncCommits (workingCopyId, clientCommits);
       WorkingCopies.update({_id : workingCopyId}, updates);
       return [200, 'new working copy created'];
     } else {
-      var updates = apiHelpers.insertNewCommits (workingCopy._id, clientCommits);
+      var updates = apiHelpers.syncCommits (workingCopy._id, clientCommits);
       WorkingCopies.update({_id : workingCopy._id}, updates);
       return [200, 'updated existing working copy'];
     }
@@ -83,10 +73,12 @@ var apiHelpers = {
   },
 
   getUserForComputer : function (computerId) {
+    console.log ('computerId', computerId);
+    console.log (Computers.findOne ({_id : computerId}));
     return Computers.findOne ({_id : computerId}).userId;
   },
 
-  insertNewCommits : function (workingCopyId, clientCommits) {
+  syncCommits : function (workingCopyId, clientCommits) {
     var newCommits = [];
     var updates = {
       $addToSet : {commitIds : {$each : newCommits}}
@@ -105,7 +97,10 @@ var apiHelpers = {
           //TODO: do we need to sync these to make sure stuff hasn't changed?
         }
       });
+    } else {
+      console.log ('no client commits');
     }
+
     return updates;
   }
 
