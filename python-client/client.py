@@ -49,7 +49,7 @@ def _query_endpoint(path, body={}):
     Helper function for getting the URL of an endpoint
     Only does POST for now
     """
-    resp = requests.post(SERVER_ROOT + "/" + path, data=json.dumps(body))
+    resp = requests.post(SERVER_ROOT + "/" + path, data=json.dumps(body), headers={'content-type': 'text/plain'})
     if not resp.status_code == requests.codes.ok:
         print "There was an error sending data to the server: [%s, %d] %s" % (path, resp.status_code, resp.text)
     return resp
