@@ -61,6 +61,7 @@ Meteor.Router.add({
       return [400, 'repository doesnt exist for remoteUrl'];
     }
 
+    //test
     var query = {
       computerId : body.computerId,
       branchName : body.branchName,
@@ -133,6 +134,7 @@ var apiHelpers = {
   },
 
   syncCommits : function (workingCopyId, clientCommits) {
+    console.log (clientCommits);
     var commitsToAdd = [];
     var commitsToRemove = [];
 
