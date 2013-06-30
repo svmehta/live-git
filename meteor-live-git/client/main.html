@@ -72,15 +72,17 @@
     <div class="main-block">
       <div class="action-icon {{this.iconType}}"></div>
       <div class="main write">
-        <div class="item">
+        <div class="item file">
           {{this.firstFile.file}}
+          <br>
           <div class="time-stamp">
             {{this.firstFile.timeago}}
           </div>
         </div>
         {{#each this.files}}
-          <div class="item item-two">
+          <div class="item item-two file">
             {{this.file}}
+            <br>
             <div class="time-stamp">
               {{this.timeago}}
             </div>
