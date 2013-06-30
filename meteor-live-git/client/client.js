@@ -126,6 +126,7 @@ Template.user.olderItems = function() {
 
   var commits = [];
 
+    // This doesn't work in the case of untrackedFiles, since we don't keep old coomit history
   for (var i = first_historic_commit; i < first_historic_commit + 3; i ++) {
     if (this.workingCopy.commits[i]) {
       var commit = processCommitData(this.workingCopy.commits[i], this.workingCopy);
