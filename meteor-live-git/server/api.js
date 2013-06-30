@@ -5,14 +5,17 @@ Meteor.Router.add({
     var body = this.request.body;
 
     // create the user if it doesn't exist
-    var userId = Users.findOne ({name : body.name, email : body.email});
+    var user = Users.findOne ({name : body.name, email : body.email});
 
-    if (!userId) {
+    if (user) {
+        var userId = user._id;
+    }
+    else {
       userId = Users.insert ({name : body.name, email: body.email});
     }
 
-    var compId = apiHelpers.createComputer (userId);
-    return [200, JSON.stringify ({computerId : compId, userId : userId})];
+    var compId = apiHelpers.createComputer(user);
+    return [200, JSON.stringify ({computerId : compId, userId : user._id})];
   },
   
   /*
