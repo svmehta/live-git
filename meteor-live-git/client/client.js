@@ -57,6 +57,8 @@ Template.main.users = function() {
     userArray.sort (function (a, b) {
       var wcA = a.workingCopy;
       var wcB = b.workingCopy;
+      console.log (wcA)
+      console.log (wcB)
       if (wcA.commits && wcA.commits.length && wcB.commits && wcB.commits.length) {
         return wcA.commits[0].timestamp - wcB.commits[0].timestamp;
       } else if (wcA.commits && wcA.commits.length) {
