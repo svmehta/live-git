@@ -57,6 +57,7 @@ var processCommitData = function(commit, workingCopy) {
   // var commit = Commits.findOne({ _id: commitId });
   commit.timeago = moment.unix(commit.timestamp).fromNow();
   commit.branchName = workingCopy.branchName;
+  commit.numBehind = workingCopy.fileStats.numBehind;
   commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
   commit.iconType = "save";
   commit.fileList = commit.files.join(", ");
@@ -71,6 +72,7 @@ Template.user.uncommittedFiles = function() {
   var wc_timeago = moment(this.workingCopy.timestamp).fromNow();
   var result = {
     files: [],
+    numBehind: this.workingCopy.fileStats.numBehind,
     branchStyle: this.workingCopy.fileStats.numBehind > 0 ? "behind" : "",
     branchName: this.workingCopy.branchName,
     iconType: "write"
@@ -125,8 +127,13 @@ Template.user.olderItems = function() {
   }
 
   var commits = [];
+  var max = first_historic_commit + 3;
 
-  for (var i = first_historic_commit; i < first_historic_commit + 3; i ++) {
+  if (Session.get("openCopy") == this.workingCopy._id) {
+    max = this.workingCopy.commits.length;
+  }
+
+  for (var i = first_historic_commit; i < max; i ++) {
     if (this.workingCopy.commits[i]) {
       var commit = processCommitData(this.workingCopy.commits[i], this.workingCopy);
       commits.push(commit);
@@ -135,6 +142,31 @@ Template.user.olderItems = function() {
 
   return commits;
 };
+
+
+Template.user.hasMore = function() {
+  var first_historic_commit = 1;
+  if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length) {
+    first_historic_commit = 0;
+  }
+  return (this.workingCopy.commits.length > first_historic_commit + 3);
+};
+
+
+Template.user.showOrHide = function() {
+  return (Session.get("openCopy") == this.workingCopy._id) ? "Hide" : "Show";
+};
+
+
+Template.user.events({
+  'click .more-text': function (evt) {
+    if (Session.get("openCopy") == this.workingCopy._id) {
+      Session.set("openCopy", null);
+    } else {
+      Session.set("openCopy", this.workingCopy._id);
+    }
+  }
+});
 
 
 Template.branchChart.hasCommitsAhead = function() {
