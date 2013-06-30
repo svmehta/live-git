@@ -89,6 +89,7 @@ def get_working_copy(params):
         previous_commit = c
 
     working_copy = {
+            "computerId": params["computerId"],
             "branchName": current_branch.name,
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
