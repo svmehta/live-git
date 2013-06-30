@@ -11,11 +11,25 @@
 # Store the current working directory; this is where we'll look for changes
 CurrentDir=`pwd`
 
+# Sanity checks
 if [ ! -d "$CurrentDir/.git" ]; then
   echo "Current directory doesn't appear to be a Git working directory!"
   echo "cd to something that is being tracked by Git."
   exit 1
 fi
+
+if [ ! `which git` ]; then
+  echo "Command-line git doesn't appear to be installed."
+  echo "Try 'apt-get install git', or install Xcode on OS X";
+  exit 1
+fi
+
+if [ ! `which pip` ]; then
+  echo "Python's pip package manager doesn't appear to be installed."
+  echo "Try 'apt-get install python-pip' or 'sudo easy_install pip'";
+  exit 1
+fi
+
 
 # We will do everything in a magic directory
 if [ ! -d ~/.gitdashboard ]; then
