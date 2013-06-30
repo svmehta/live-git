@@ -8,25 +8,11 @@ Meteor.Router.add({
     var userId = Users.findOne ({name : body.name, email : body.email});
 
     if (!userId) {
-      Users.insert ({name : body.name, email: body.email},
-        function (err, userId) {
-          if (err) {
-            return (err);
-          } else {
-            var compId = apiHelpers.createComputer (userId);
-            if (!compId) {
-              return [500, 'could not create computer'];
-            }
-            return [200, JSON.stringify ({computerId : compId})];
-          }
-        });
-    } else {
-      var compId = apiHelpers.createComputer (userId);
-      if (!compId) {
-        return [500, 'could not create computer'];
-      }
-      return [200, JSON.stringify ({computerId : compId})];
+      userId = Users.insert ({name : body.name, email: body.email});
     }
+
+    var compId = apiHelpers.createComputer (userId);
+    return [200, JSON.stringify ({computerId : compId})];
   },
   
   /*
@@ -43,15 +29,7 @@ Meteor.Router.add({
       userId : user._id
     };
 
-    WorkingCopies.findOne(query,
-      function(err, result){ 
-      if(!err){
-        //TODO
-        return result;
-      } else{
-        return(err);
-      }
-    });
+    return WorkingCopies.findOne(query);
   },
 
   '/update' : function() {
@@ -69,31 +47,14 @@ Meteor.Router.add({
     var workingCopy = WorkingCopies.findOne(query);
 
     if (!workingCopy) {
-      WorkingCopy.insert(query, 
-        function (err, workingCopyId) {
-          if (err) {
-            return [500, 'could not create new workingCopy'];
-          } else {
-            // log the commits
-            var updates = apiHelpers.insertNewCommits (workingCopyId, clientGitData);
-            apiHelpers.updateWorkingCopy (updates, workingCopyId, function (err) {
-              if (err) {
-                return [500, 'could not update workingCopy'];
-              } else {
-                return [200, 'new working copy created'];
-              }
-            });
-          }
-        });
+      var workingCopyId = WorkingCopy.insert(query);
+      var updates = apiHelpers.insertNewCommits (workingCopyId, clientGitData);
+      WorkingCopies.update({_id : workingCopyId}, updates);
+      return [200, 'new working copy created'];
     } else {
       var updates = apiHelpers.insertNewCommits (workingCopy._id, clientGitData);
-      apiHelpers.updateWorkingCopy (updates, workingCopyId, function (err) {
-        if (err) {
-          return [500, 'could not update workingCopy'];
-        } else {
-          return [200, 'new working copy created'];
-        }
-      });
+      WorkingCopies.update({_id : workingCopy._id}, updates);
+      return [200, 'new working copy created'];
     }
   }
 
@@ -110,17 +71,6 @@ var apiHelpers = {
     return Users.findOne ({computerId : computerId});
   },
   
-  updateWorkingCopy : function (updates, workingCopyId) {
-    WorkingCopies.update({_id : workingCopy._id}, updates,
-      function (err) {
-        if (err) {
-          callback(err);
-        } else {
-          callback();
-        }
-      });
-  },
-
   insertNewCommits : function (workingCopyId, clientGitData) {
     var newCommits = [];
     var updates = {
