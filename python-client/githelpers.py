@@ -54,8 +54,11 @@ def get_working_copy(params, dirpath):
 
     # Gather branch information
     current_branch = repo.active_branch
-    untracked = repo.untracked_files
-
+    untracked_filenames = repo.untracked_files
+    untracked = []
+    for u in untracked_filenames:
+        lastMod, timeSince = _last_modified_time(u)
+        untracked.append({ "filename": filename, "lastModified": lastMod, "timeSinceModified": timeSince })
     # In order to make sure that we have up to date information, we fetch
     origin_remote, remote_url = _get_remote_origin(repo)
     try:
@@ -167,9 +170,9 @@ def _difflist_to_dictlist(diffs):
         }
 
         if os.path.exists(abspath):
-            current_dict['lastModified'] = os.path.getmtime(abspath) * 1000
-            current_dict['timeSinceModified'] = int(time.time() * 1000) - current_dict['lastModified']
-
+            lastMod, timeSince = _last_modified_time(abspath)
+            current_dict['lastModified'] = lastMod
+            current_dict['timeSinceModified'] = timeSince
 
         dictlist.append(current_dict)
     return dictlist
@@ -182,4 +185,11 @@ def _get_remote_origin(repo):
     remote_url = origin_remote.url
     return origin_remote, remote_url
 
-
+def _last_modified_time(abspath):
+    """ 
+    Get the last modified time and the time since modified of a file at 
+    the given path (in milliseconds)
+    """
+    lastModified = os.path.getmtime(abspath) * 1000
+    timeSinceModified = int(time.time() * 1000) - lastModified
+    return lastModified, timeSinceModified
