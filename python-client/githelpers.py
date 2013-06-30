@@ -5,6 +5,7 @@ Scripts for retrieving data about the git repository
 
 from git import *
 import os, sys
+import gitstatus
 
 def get_repo(dirpath):
     """
@@ -86,13 +87,17 @@ def get_working_copy(params, dirpath):
         commits.append(commit_info)
         previous_commit = c
 
+    # Pull statistics from the zsh git plugin (i.e. number of untracked)
+    file_stats = gitstatus.get_statistics(dirpath)
+
     working_copy = {
             "computerId": params["computerId"],
             "branchName": current_branch.name,
             "remoteUrl": remote_url,
             "untrackedFiles": untracked,
             "unpushedCommits": unpushed_commits,
-            "clientDir": dirpath
+            "clientDir": dirpath,
+            "fileStats": file_stats
     }
 
     return working_copy
