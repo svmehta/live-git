@@ -48,23 +48,25 @@ Template.main.users = function() {
     var user = Users.findOne({ _id: copy.userId })
     if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
 
+    userArray.push({
+      "user": user,
+      "workingCopy": copy,
+      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
+    });
+
     userArray.sort (function (a, b) {
-      console.log ("a", a)
-      console.log ("b", b)
-      if (a.commits.length && b.commits.length) {
-        return b.commits[0].timestamp - a.commits[0].timestamp;
-      } else if (a.commits.length) {
+      var wcA = a.workingCopy;
+      var wcB = b.workingCopy;
+      console.log ('wcA', wcA)
+      if (wcA.commits && wcA.commits.length && wcB.commits && wcB.commits.length) {
+        return wcA.commits[0].timestamp - wcB.commits[0].timestamp;
+      } else if (wcA.commits && wcA.commits.length) {
         return -1;
       } else {
         return 1;
       }
     })
 
-    userArray.push({
-      "user": user,
-      "workingCopy": copy,
-      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
-    });
   });
 
   console.log(userArray);
