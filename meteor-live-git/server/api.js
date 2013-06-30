@@ -97,7 +97,7 @@ Meteor.Router.add({
       WorkingCopies.update({_id : workingCopyId}, update);
     }
 
-    var updates = apiHelpers.syncCommits (workingCopyId, unpushedCommits);
+    var updates = apiHelpers.syncCommits (workingCopyId, userId, unpushedCommits);
 
     if (updates.removesLen > 0) {
       WorkingCopies.update({_id : workingCopyId}, updates.remove);
@@ -137,7 +137,7 @@ var apiHelpers = {
     }
   },
 
-  syncCommits : function (workingCopyId, clientCommits) {
+  syncCommits : function (workingCopyId, userId, clientCommits) {
     console.log (clientCommits);
     var commitsToAdd = [];
     var commitsToRemove = [];
@@ -157,6 +157,7 @@ var apiHelpers = {
         // the commit exists on the client but not on the server
         if (dbHashes.indexOf (commit.clientHash) === -1) {
           commit.workingCopyId = workingCopyId;
+          commit.userId = userId;
           var commitId = Commits.insert (commit);
           commitsToAdd.push (commitId);
         }
