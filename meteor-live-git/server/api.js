@@ -35,6 +35,11 @@ Meteor.Router.add({
   '/update' : function() {
     var body = this.request.body;
     var clientGitData = body.gitData;
+
+    if (!clientGitData) {
+      return [400, 'must provide gitData'];
+    }
+
     var user = apiHelpers.getUserForComputer (body.computerId);
 
     var query = {
@@ -47,7 +52,7 @@ Meteor.Router.add({
     var workingCopy = WorkingCopies.findOne(query);
 
     if (!workingCopy) {
-      var workingCopyId = WorkingCopy.insert(query);
+      var workingCopyId = WorkingCopies.insert(query);
       var updates = apiHelpers.insertNewCommits (workingCopyId, clientGitData);
       WorkingCopies.update({_id : workingCopyId}, updates);
       return [200, 'new working copy created'];
@@ -77,17 +82,20 @@ var apiHelpers = {
       $addToSet : {commitIds : {$each : newCommits}}
     };
 
-    var commits = Commits.find ({workingCopyId : workingCopyId});
-    var hashes = _.filter (function (commit) { return commit.clientHash});
-    
-    clientGitData.commits.forEach (function (commit) {
-      if (hashes.indexOf (commit.clientHash) !== -1) {
-        var commitId = Commits.insert (commit);
-        newCommits.push (commitId);
-      } else {
-        //TODO: do we need to sync these to make sure stuff hasn't changed?
-      }
-    });
+    var commits = Commits.find ({workingCopyId : workingCopyId}).fetch();
+
+    if (commits.length) {      
+      var hashes = _.filter (commits, function (commit) { return commit.clientHash});
+      
+      clientGitData.commits.forEach (function (commit) {
+        if (hashes.indexOf (commit.clientHash) !== -1) {
+          var commitId = Commits.insert (commit);
+          newCommits.push (commitId);
+        } else {
+          //TODO: do we need to sync these to make sure stuff hasn't changed?
+        }
+      });
+    }
 
     return updates;
   }
