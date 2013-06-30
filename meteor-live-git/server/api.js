@@ -117,9 +117,9 @@ var apiHelpers = {
   },
 
   getUserForComputer : function (computerId) {
-    var user = Computers.findOne ({_id : computerId});
-    if (user) {
-      return user._id;
+    var computer = Computers.findOne ({_id : computerId});
+    if (computer) {
+      return computer.userId;
     } else {
       return null;
     }
