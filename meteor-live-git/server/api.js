@@ -47,7 +47,8 @@ Meteor.Router.add({
    */
   '/update' : function() {
     var body = this.request.body;
-    var clientCommits = body.unpushedCommits;
+    var unpushedCommits = body.unpushedCommits;
+
     console.log(body)
 
     if (!body.computerId) {
@@ -98,7 +99,7 @@ Meteor.Router.add({
       WorkingCopies.update({_id : workingCopyId}, update);
     }
 
-    var updates = apiHelpers.syncCommits (workingCopyId, clientCommits);
+    var updates = apiHelpers.syncCommits (workingCopyId, unpushedCommits);
 
     if (updates.removesLen > 0) {
       WorkingCopies.update({_id : workingCopyId}, updates.remove);
