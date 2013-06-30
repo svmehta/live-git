@@ -202,16 +202,20 @@ Template.user.showingDiff = function() {
 
 Template.user.fileDiff = function() {
   var output;
-  this.workingCopy.gitDiff.forEach(function(diff) {
-    if (Session.equals("openDiffFile", diff.file)) {
-      output = diff.content;
-    }
-  });
-  this.workingCopy.commits[0].diff.forEach(function(diff) {
-    if (Session.equals("openDiffFile", diff.file)) {
-      output = diff.content;
-    }
-  });
+  if (this.workingCopy.gitDiff) {
+    this.workingCopy.gitDiff.forEach(function(diff) {
+      if (Session.equals("openDiffFile", diff.file)) {
+        output = diff.content;
+      }
+    });
+  }
+  if (this.workingCopy.commits && this.workingCopy.commits[0].diff) {
+    this.workingCopy.commits[0].diff.forEach(function(diff) {
+      if (Session.equals("openDiffFile", diff.file)) {
+        output = diff.content;
+      }
+    });
+  }
 
   if (output) { return hljs.highlight("diff", output).value; }
 };
