@@ -44,6 +44,7 @@ Meteor.Router.add({
     var body = this.request.body;
     var clientCommits = body.unpushedCommits;
     console.log(body)
+
     var userId = apiHelpers.getUserForComputer (body.computerId);
 
     if (!userId) {

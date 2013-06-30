@@ -18,7 +18,7 @@ def main():
     if not os.path.exists(bootstrap_path):
         user_info = githelpers.get_computer_info()["user"]
         print user_info
-        resp = query_endpoint("bootstrap", user_info).json()
+        resp = _query_endpoint("bootstrap", user_info).json()
         userId, computerId = resp["userId"], resp["computerId"]
         with open(bootstrap_path, "w") as f:
             f.write(computerId)
@@ -34,11 +34,11 @@ def main():
         "computerId": computerId
     })
 
-    working_resp = query_endpoint("update", working_copy)
+    working_resp = _query_endpoint("update", working_copy)
 
     print working_copy  # TODO remove
 
-def query_endpoint(path, body={}):
+def _query_endpoint(path, body={}):
     """
     Helper function for getting the URL of an endpoint
     Only does POST for now
