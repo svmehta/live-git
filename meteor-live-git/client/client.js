@@ -210,10 +210,12 @@ Template.user.fileDiff = function() {
     });
   }
   if (this.workingCopy.commits && this.workingCopy.commits[0] && this.workingCopy.commits[0].diff) {
-    this.workingCopy.commits[0].diff.forEach(function(diff) {
-      if (Session.equals("openDiffFile", diff.file)) {
-        output = diff.content;
-      }
+    this.workingCopy.commits.forEach(function(commit) {
+      commit.diff.forEach(function(diff) {
+        if (Session.equals("openDiffFile", diff.file)) {
+          output = diff.content;
+        }
+      });
     });
   }
 
