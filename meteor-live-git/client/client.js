@@ -90,6 +90,7 @@ var processCommitData = function(commit, workingCopy, isDone) {
   commit.numBehind = workingCopy.fileStats.numBehind;
   commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
   commit.iconType = isDone ? "push" : "save";
+  commit.allDone = isDone;
   // console.log(commit);
   return commit;
 };
