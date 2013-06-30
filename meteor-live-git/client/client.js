@@ -54,11 +54,13 @@ Template.main.users = function() {
       { sort : {timestamp : -1}}
     );
 
+    console.log (user.email().trim().toLowerCase())
+
     userArray.push({
       "user": user,
       "workingCopy": copy,
       "lastPushedCommit" : lastPushedCommit,
-      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase().replace (/\./g,"")).toString()
+      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
     });
 
     userArray.sort (function (a, b) {
