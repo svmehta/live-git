@@ -4,9 +4,15 @@ XCode style (c) Angel Garcia <angelgarcia.mail@gmail.com>
 
 */
 
-pre code {
-  display: block; padding: 0.5em;
-  background: #fff; color: black;
+
+pre {
+  display: block; padding: 8px;
+  background: #fff; color: #2c3e50;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+
 }
 
 pre .comment,
@@ -138,11 +144,11 @@ pre .diff .change {
 }
 
 pre .addition {
-  background-color: #BAEEBA;
+  background-color: #A5DDC3;
 }
 
 pre .deletion {
-  background-color: #FFC8BD;
+  background-color: #E5807A;
 }
 
 pre .comment .yardoctag {
