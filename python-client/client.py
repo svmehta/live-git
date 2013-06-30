@@ -20,9 +20,7 @@ def main():
 
     git_directory = os.path.abspath(args.git_directory) or os.getcwd()
 
-    # Only bootstrap if we don't already have it
     bootstrap_path = os.path.join(os.path.expanduser("~"), BOOTSTRAP_DOTFILE)
-   
     # Bootstrap file: expect computerId on first line, userId on second
     if not os.path.exists(bootstrap_path):
         user_info = githelpers.get_computer_info(git_directory)["user"]
