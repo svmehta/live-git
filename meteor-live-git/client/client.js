@@ -61,12 +61,12 @@ Template.main.users = function() {
         return wcA.commits[0].timestamp - wcB.commits[0].timestamp;
       } else if (wcA.commits && wcA.commits.length) {
         return -1;
-      } else if (wcBcommits && wcBcommits.length) {
+      } else if (wcB.commits && wcB.commits.length) {
         return 1;
       } else if (a.user.email > b.user.email) {
-        return -1;
-      } else {
         return 1;
+      } else {
+        return -1;
       }
     });
 
