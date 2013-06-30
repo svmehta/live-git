@@ -4,7 +4,7 @@ var getRepository = function() {
 };
 
 var getUsers = function() {
-  var users = Users.find();   // TODO filter for current repository
+  var users = Users.find().fetch();   // TODO filter for current repository
 
   var usersWithWorkingCopy = _.map(users, function(user) {
     var workingCopy = WorkingCopies.findOne({ userId: user._id, },
@@ -16,6 +16,7 @@ var getUsers = function() {
     };
   });
 
+  console.log(usersWithWorkingCopy);
   return usersWithWorkingCopy;
 };
 
