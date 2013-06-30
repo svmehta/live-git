@@ -1,4 +1,7 @@
 Meteor.Router.add({
+  '/install' : function () {
+    return [301, { Location: "https://raw.github.com/svmehta/live-git/master/install.sh" }, ''];
+  },
 
   '/bootstrap' : function () {
     var body = this.request.body;
