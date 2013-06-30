@@ -291,3 +291,77 @@ body {
 	margin-left: 10px;
 	font-family: serif;
 }
+
+
+/* CHART */
+
+.branch-drawing {
+	margin-left: 40px;
+	margin-top: 40px;
+}
+
+.circle {
+	background-color: lighten(@dark-grey, 20%);
+	width: 12px;
+	height: 12px;
+	border-radius: 60px;
+	border: 2px solid @black;
+	float: left;
+	z-index: 200;
+	position: absolute;
+	top: 52px;
+	left: 33px;
+	&.last {
+		margin: 0px 84px;
+		background-color: darken(@red, 20%);
+	}
+	&.current {
+		margin: 42px 84px;
+		background-color: @dark-grey;
+	}
+}
+
+.new-commit {
+	margin: 42px 42px;
+}
+
+.new-push {
+	margin: 0px 42px;
+	background-color: @red;
+	border-color: darken(@red, 20%);
+}
+
+.start-square {
+	height: 40px;
+	width: 40px;
+	border-radius: 0px 0px 0px 20px;
+	border: 2px solid @black;
+	border-right: none;
+	border-top: none;
+	display: inline-block;
+	position: absolute;
+
+	&.commit {
+		border-top: 2px solid darken(@red, 20%);
+	}
+
+}
+
+.square {
+	height: 40px;
+	width: 40px;
+	border-top: 2px solid darken(@red, 20%);
+	border-bottom: 2px solid @dark-grey;
+	display: inline-block;
+	position: absolute;
+	top: 60px;
+	left:80px;
+
+	&.no-push {
+		border-top: none;
+	}
+
+	&.no-commit {
+		border-bottom: none;
+	}
+}
