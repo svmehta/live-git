@@ -77,6 +77,7 @@ Meteor.Router.add({
       query.untrackedFiles = body.untrackedFiles;
       query.fileStats = body.fileStats;
       query.timestamp = Date.now();
+      query.gitDiff = body.gitDiff;
       workingCopyId = WorkingCopies.insert(query);
     } else {
       workingCopyId = workingCopy._id;
@@ -84,7 +85,8 @@ Meteor.Router.add({
         $set : {
           untrackedFiles : body.untrackedFiles,
           fileStats : body.fileStats,
-          timestamp : Date.now()
+          timestamp : Date.now(),
+          gitDiff : body.gitDiff
         } 
       };
       WorkingCopies.update({_id : workingCopyId}, update);
