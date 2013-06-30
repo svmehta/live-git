@@ -106,6 +106,7 @@ def get_working_copy(params, dirpath):
             "gitDiff": current_diffs,
     }
     for k, v in file_stats.iteritems():
+        print k
         working_copy[k] = v
 
     return working_copy
