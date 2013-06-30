@@ -13,8 +13,11 @@ curl -L http://gitdashboard.com/install | /bin/bash
 
 This will create the directory `~/.gitdashboard`, install everything inside a virtualenv there, and run the watcher script. (To uninstall, just delete the directory.)
 
+## Work in Progress Notes...
 
-** Note: currently are branches are assumed to be tracking a remote branch located at "origin"
+*Currently branches are assumed to be tracking a remote branch located at "origin"
+*We run git fetch from the command line frequently to compare your current repository status to the remote, to avoid prompts for username and password it's best to set up your remote to fetch via ssh
+*There is no security
 
 ## Running the server
 
