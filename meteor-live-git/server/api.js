@@ -2,7 +2,7 @@ Meteor.Router.add({
 
   '/bootstrap' : function () {
     var body = this.request.body;
-
+    console.log (body)
     var remoteUrl = body.remoteUrl;
     if (!remoteUrl) {
       return [400, 'must provide remoteUrl'];
@@ -65,7 +65,7 @@ Meteor.Router.add({
       computerId : body.computerId,
       branchName : body.branchName,
       clientDir : body.clientDir,
-      repositoryId : body.repositoryId,
+      repositoryId : repositoryId,
       userId : userId
     };
 
@@ -75,7 +75,7 @@ Meteor.Router.add({
     if (!workingCopy) {
       query.commitIds = []; //init empty array
       query.untrackedFiles = body.untrackedFiles;
-      query.fileStats = body.fileStats;
+      query.fileStats = apiHelpers.getFileStats (body);
       query.timestamp = Date.now();
       query.gitDiff = body.gitDiff;
       workingCopyId = WorkingCopies.insert(query);
@@ -84,10 +84,10 @@ Meteor.Router.add({
       var update = { 
         $set : {
           untrackedFiles : body.untrackedFiles,
-          fileStats : body.fileStats,
           timestamp : Date.now(),
+          fileStats : apiHelpers.getFileStats (body),
           gitDiff : body.gitDiff
-        } 
+        }
       };
       WorkingCopies.update({_id : workingCopyId}, update);
     }
@@ -115,11 +115,21 @@ var apiHelpers = {
   },
 
   getUserForComputer : function (computerId) {
-    return Computers.findOne ({_id : computerId}).userId;
+    var user = Computers.findOne ({_id : computerId});
+    if (user) {
+      return user._id;
+    } else {
+      return null;
+    }
   },
 
   getRepoIdForUrl : function (remoteUrl) {
-    return Repositories.findOne ({url : remoteUrl})._id;
+    var repo = Repositories.findOne ({url : remoteUrl});
+    if (repo) {
+      return repo._id;
+    } else {
+      return null;
+    }
   },
 
   syncCommits : function (workingCopyId, clientCommits) {
@@ -168,6 +178,17 @@ var apiHelpers = {
     updates.removesLen = commitsToRemove.length;
 
     return updates;
+  },
+
+  getFileStats : function (body) {
+    return {
+      numBehind : body.numAhead,
+      numConflicts : body.numConflicts,
+      numStaged : body.numStaged,
+      numChanged : body.numChanged,
+      numAhead : body.numAhead,
+      numUntracked : body.numUntracked
+    }
   }
 
 }
