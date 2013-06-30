@@ -1,3 +1,5 @@
+Session.set("searchedForRepo", false);
+
 // Main template
 Template.main.showRepository = function() {
   return (window.location.pathname.length > 15);
@@ -14,7 +16,12 @@ Template.main.repository = function() {
       repo.name = matches[1];
     }
 
+    Session.set("searchedForRepo", true);
+
     return repo;
+  } else if (!Session.get("searchedForRepo")) {
+      console.log("loading")
+    return { name: "Loading..." };
   } else {
     return { name: "Error: invalid repository ID" };
   }
@@ -41,23 +48,28 @@ Template.main.users = function() {
     var user = Users.findOne({ _id: copy.userId })
     if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
 
-    userArray.sort (function (a, b) {
-      console.log ("a", a)
-      console.log ("b", b)
-      if (a.commits.length && b.commits.length) {
-        return b.commits[0].timestamp - a.commits[0].timestamp;
-      } else if (a.commits.length) {
-        return -1;
-      } else {
-        return 1;
-      }
-    })
-
     userArray.push({
       "user": user,
       "workingCopy": copy,
       "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
     });
+
+    userArray.sort (function (a, b) {
+      var wcA = a.workingCopy;
+      var wcB = b.workingCopy;
+      if (wcA.commits && wcA.commits.length && wcB.commits && wcB.commits.length) {
+        return wcA.commits[0].timestamp - wcB.commits[0].timestamp;
+      } else if (wcA.commits && wcA.commits.length) {
+        return -1;
+      } else if (wcB.commits && wcB.commits.length) {
+        return 1;
+      } else if (a.user.email > b.user.email) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
   });
 
   console.log(userArray);
@@ -69,9 +81,9 @@ var processCommitData = function(commit, workingCopy) {
   // var commit = Commits.findOne({ _id: commitId });
   commit.timeago = moment.unix(commit.timestamp).fromNow();
   commit.branchName = workingCopy.branchName;
+  commit.numBehind = workingCopy.fileStats.numBehind;
   commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
   commit.iconType = "save";
-  commit.fileList = commit.files.join(", ");
   // console.log(commit);
   return commit;
 };
@@ -83,6 +95,7 @@ Template.user.uncommittedFiles = function() {
   var wc_timeago = moment(this.workingCopy.timestamp).fromNow();
   var result = {
     files: [],
+    numBehind: this.workingCopy.fileStats.numBehind,
     branchStyle: this.workingCopy.fileStats.numBehind > 0 ? "behind" : "",
     branchName: this.workingCopy.branchName,
     iconType: "write"
@@ -137,9 +150,13 @@ Template.user.olderItems = function() {
   }
 
   var commits = [];
+  var max = first_historic_commit + 3;
 
-    // This doesn't work in the case of untrackedFiles, since we don't keep old coomit history
-  for (var i = first_historic_commit; i < first_historic_commit + 3; i ++) {
+  if (Session.get("openCopy") == this.workingCopy._id) {
+    max = this.workingCopy.commits.length;
+  }
+
+  for (var i = first_historic_commit; i < max; i ++) {
     if (this.workingCopy.commits[i]) {
       var commit = processCommitData(this.workingCopy.commits[i], this.workingCopy);
       commits.push(commit);
@@ -148,6 +165,31 @@ Template.user.olderItems = function() {
 
   return commits;
 };
+
+
+Template.user.hasMore = function() {
+  var first_historic_commit = 1;
+  if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length) {
+    first_historic_commit = 0;
+  }
+  return (this.workingCopy.commits.length > first_historic_commit + 3);
+};
+
+
+Template.user.showOrHide = function() {
+  return (Session.get("openCopy") == this.workingCopy._id) ? "Hide" : "Show";
+};
+
+
+Template.user.events({
+  'click .more-text': function (evt) {
+    if (Session.get("openCopy") == this.workingCopy._id) {
+      Session.set("openCopy", null);
+    } else {
+      Session.set("openCopy", this.workingCopy._id);
+    }
+  }
+});
 
 
 Template.branchChart.hasCommitsAhead = function() {

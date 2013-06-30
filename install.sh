@@ -5,7 +5,7 @@
 # Requires git and pip to already be installed!
 #
 # Run with:
-# curl https://raw.github.com/svmehta/live-git/master/install.sh | /bin/bash
+# curl -L http://gitdashboard.com/install | /bin/bash
 #
 
 # Store the current working directory; this is where we'll look for changes

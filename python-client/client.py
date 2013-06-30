@@ -31,9 +31,15 @@ def main():
     # Handle command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", dest="git_directory", default=None)
-    parser.add_argument("-p", dest="poll_timeout", type=int, default=60)
+    parser.add_argument("-p", dest="poll_timeout", type=int, default=5)
+    parser.add_argument("--local", action="store_true")
+
 
     args = parser.parse_args()
+
+    if args.local:
+        global SERVER_ROOT
+        SERVER_ROOT = "http://localhost:3000"
 
     if args.git_directory:
         git_directory = os.path.abspath(args.git_directory)

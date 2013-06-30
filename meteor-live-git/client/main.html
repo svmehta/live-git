@@ -57,9 +57,11 @@
 
         <div class="more">
           <div class="more-divider"></div>
-          <div class="more-text">
-            Show more
-          </div>
+          {{#if hasMore}}
+            <div class="more-text">
+              {{showOrHide}} more
+            </div>
+          {{/if}}
         </div>
       </div>
     </div>
@@ -72,6 +74,9 @@
     <div class="branch {{this.branchStyle}}">
       {{this.branchName}}
     </div>
+    {{#if this.numBehind}}
+      <div class="behind-number">{{this.numBehind}} behind</div>
+    {{/if}}
     <div class="main-block">
       <div class="action-icon {{this.iconType}}"></div>
       <div class="main write">
@@ -102,6 +107,9 @@
     <div class="branch {{this.branchStyle}}">
       {{this.branchName}}
     </div>
+    {{#if this.numBehind}}
+      <div class="behind-number">{{this.numBehind}} behind</div>
+    {{/if}}
     <div class="main-block">
       <div class="action-icon {{this.iconType}}"></div>
       <div class="main quote">
@@ -113,7 +121,9 @@
         </div>
       </div>
       <div class="updated-files">
-        {{this.fileList}}
+        {{#each this.files}}
+          <div class="updated-file">{{this}}</div>
+        {{/each}}
       </div>
     </div>
   </div>
@@ -133,7 +143,9 @@
       {{this.timeago}}
     </div>
     <div class="updated-files">
-      {{this.fileList}}
+      {{#each this.files}}
+        <div class="updated-file">{{this}}</div>
+      {{/each}}
     </div>
   </div>
 </template>
