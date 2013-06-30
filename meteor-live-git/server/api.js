@@ -7,15 +7,17 @@ Meteor.Router.add({
     // create the user if it doesn't exist
     var user = Users.findOne ({name : body.name, email : body.email});
 
+    var userId;
     if (user) {
-        var userId = user._id;
+        userId = user._id;
     }
     else {
       userId = Users.insert ({name : body.name, email: body.email});
     }
+    console.log(userId);
 
-    var compId = apiHelpers.createComputer(user);
-    return [200, JSON.stringify ({computerId : compId, userId : user._id})];
+    var compId = apiHelpers.createComputer(userId);
+    return [200, JSON.stringify ({computerId : compId, userId : userId})];
   },
 
   /*
@@ -41,6 +43,7 @@ Meteor.Router.add({
   '/update' : function() {
     var body = this.request.body;
     var clientCommits = body.unpushedCommits;
+    console.log(body)
     var userId = apiHelpers.getUserForComputer (body.computerId);
 
     if (!userId) {
@@ -90,6 +93,7 @@ var apiHelpers = {
     var commits = Commits.find ({workingCopyId : workingCopyId}).fetch();
     var hashes = _.map (commits, function (commit) { return commit.clientHash});
 
+    console.log(newCommits)
     clientCommits.forEach (function (commit) {
       if (hashes.indexOf (commit.clientHash) === -1) {
         commit.workingCopyId = workingCopyId;
