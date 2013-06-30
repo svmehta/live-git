@@ -38,6 +38,12 @@
         </div>
       </div>
       <div class="span9">
+        {{#with allDone}}
+            <div class="all-done-message">
+                {{message}}     
+            </div>
+        {{/with}}
+
         {{#with uncommittedFiles}}
           {{> new-files-row}}
         {{/with}}

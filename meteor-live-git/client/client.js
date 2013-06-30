@@ -58,7 +58,7 @@ Template.main.users = function() {
       var wcA = a.workingCopy;
       var wcB = b.workingCopy;
       if (wcA.commits && wcA.commits.length && wcB.commits && wcB.commits.length) {
-        return wcA.commits[0].timestamp - wcB.commits[0].timestamp;
+        return wcB.commits[0].timestamp - wcA.commits[0].timestamp;
       } else if (wcA.commits && wcA.commits.length) {
         return -1;
       } else if (wcB.commits && wcB.commits.length) {
@@ -138,6 +138,14 @@ Template.user.topItem = function() {
     return false;
   }
 };
+
+Template.user.allDone = function() {
+    if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length || this.workingCopy.commits.length) {
+        return false;
+    }
+    return { message: "Probably slacking..." };
+}
+
 
 
 Template.user.olderItems = function() {
