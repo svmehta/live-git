@@ -202,16 +202,22 @@ Template.user.showingDiff = function() {
 
 Template.user.fileDiff = function() {
   var output;
-  this.workingCopy.gitDiff.forEach(function(diff) {
-    if (Session.equals("openDiffFile", diff.file)) {
-      output = diff.content;
-    }
-  });
-  this.workingCopy.commits[0].diff.forEach(function(diff) {
-    if (Session.equals("openDiffFile", diff.file)) {
-      output = diff.content;
-    }
-  });
+  if (this.workingCopy.gitDiff) {
+    this.workingCopy.gitDiff.forEach(function(diff) {
+      if (Session.equals("openDiffFile", diff.file)) {
+        output = diff.content;
+      }
+    });
+  }
+  if (this.workingCopy.commits && this.workingCopy.commits[0] && this.workingCopy.commits[0].diff) {
+    this.workingCopy.commits.forEach(function(commit) {
+      commit.diff.forEach(function(diff) {
+        if (Session.equals("openDiffFile", diff.file)) {
+          output = diff.content;
+        }
+      });
+    });
+  }
 
   if (output) { return hljs.highlight("diff", output).value; }
 };
@@ -276,7 +282,7 @@ Template.branchChart.hasCommitsAhead = function() {
 
 Template.branchChart.commitsAhead = function() {
   var html = "";
-  for (var i = 0; i < this.workingCopy.fileStats.numAhead; i ++) {
+  for (var i = 0; i <= this.workingCopy.fileStats.numAhead; i ++) {
     html += "<div class=\"circle bottom-row\"></div>";
   }
   return html;
