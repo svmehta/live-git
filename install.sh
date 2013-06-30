@@ -36,8 +36,8 @@ source bin/activate
 
 # Can has virtualenv! Now clone/update our repo
 if [ -d live-git ]; then
-  git --git-dir=live-git/.git fetch 2>/dev/null
-  git --git-dir=live-git/.git --work-tree=live-git merge origin/master 2>/dev/null
+  git --git-dir=live-git/.git fetch >/dev/null
+  git --git-dir=live-git/.git --work-tree=live-git merge origin/master >/dev/null
 else
   git clone https://github.com/svmehta/live-git.git 2>/dev/null
 fi
