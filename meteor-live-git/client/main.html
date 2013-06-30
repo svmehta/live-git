@@ -12,13 +12,18 @@
 
 <template name="main">
   <div class="container">
-    {{#with repository}}
-      <h1>{{name}}</h1>
-    {{/with}}
+    {{#if showRepository}}
+      {{#with repository}}
+        <h1>{{name}}</h1>
+      {{/with}}
 
-    {{#each users}}
-      {{> user}}
-    {{/each}}
+      {{#each users}}
+        {{> user}}
+      {{/each}}
+    {{else}}
+      <h1>Welcome to Git Dashboard</h1>
+      <p>Please provide a repository URL!</p>
+    {{/if}}
   </div>
 
 </template>

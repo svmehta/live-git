@@ -1,37 +1,50 @@
 // Main template
+Template.main.showRepository = function() {
+  return (window.location.pathname.length > 15);
+}
+
 
 Template.main.repository = function() {
-  if (window.location.pathname.length < 2) {
-    console.log("No repository ID provided!");
-  } else {
-    var repo_id = window.location.pathname.substr(1);
+  var repoId = window.location.pathname.substr(1);
 
-    var repo = Repositories.findOne({_id: repo_id});
-    if (repo && !repo.name) {
+  var repo = Repositories.findOne({_id: repoId});
+  if (repo) {
+    if (!repo.name) {
       var matches = /\/([^\/]+?)(?:.git)?$/.exec(repo.url);
       repo.name = matches[1];
     }
 
     return repo;
+  } else {
+    return { name: "Error: invalid repository ID" };
   }
 };
 
 
 Template.main.users = function() {
-  var users = Users.find().fetch();   // TODO filter for current repository
+  var repoId = window.location.pathname.substr(1);
 
-  var usersWithWorkingCopy = _.map(users, function(user) {
-    var workingCopy = WorkingCopies.findOne({ userId: user._id, },
-      { sort:  { timestamp: -1 }});
-    return {
+  var copies = WorkingCopies.find(
+    { repositoryId: repoId },
+    { sort:  { timestamp: -1 }}
+  ).fetch();
+
+
+  var userArray = [];
+
+  copies.forEach(function(copy) {
+    var user = Users.findOne({ _id: copy.userId })
+    if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
+
+    userArray.push({
       "user": user,
-      "workingCopy": workingCopy,
+      "workingCopy": copy,
       "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
-    };
+    });
   });
 
-  console.log(usersWithWorkingCopy);
-  return usersWithWorkingCopy;
+  console.log(userArray);
+  return userArray;
 };
 
 // Template.main.repository = { name: "My Awesome Repo" }
