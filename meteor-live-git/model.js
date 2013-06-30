@@ -13,10 +13,17 @@ Computers = new Meteor.Collection("computers");
 Users = new Meteor.Collection("users");
 
 /*
+ * Repository consists of:
+ * url - array of git clone URLs
+ */
+Repositories = new Meteor.Collection("repositories");
+
+/*
  * WorkingCopy consists of:
  * timestamp - last update from the client
  * userId - reference to the above
  * computerId - reference to the above
+ * repositoryId - reference to the above
  * branchName - the branch
  * clientDir - path to the directory on user's machine
  * commitIds - array of commits
