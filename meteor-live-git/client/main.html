@@ -38,8 +38,11 @@
         </div>
       </div>
       <div class="span9">
+        {{#with uncommittedFiles}}
+          {{> new-files-row}}
+        {{/with}}
         {{#with topItem}}
-          {{> featured-row}}
+          {{> featured-commit-row}}
         {{/with}}
 
         <div class="history">
@@ -59,7 +62,35 @@
 </template>
 
 
-<template name="featured-row">
+<template name="new-files-row">
+  <div class="featured">
+    <div class="branch {{this.branchStyle}}">
+      {{this.branchName}}
+    </div>
+    <div class="main-block">
+      <div class="action-icon {{this.iconType}}"></div>
+      <div class="main write">
+        <div class="item">
+          {{this.firstFile.file}}
+          <div class="time-stamp">
+            {{this.firstFile.timeago}}
+          </div>
+        </div>
+        {{#each this.files}}
+          <div class="item item-two">
+            {{this.file}}
+            <div class="time-stamp">
+              {{this.timeago}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<template name="featured-commit-row">
   <div class="featured">
     <div class="branch {{this.branchStyle}}">
       {{this.branchName}}
