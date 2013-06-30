@@ -120,7 +120,7 @@ Template.user.olderItems = function() {
 
   var first_historic_commit = 1;
 
-  if (this.workingCopy.untrackedFiles.length) {
+  if (this.workingCopy.gitDiff.length || this.workingCopy.untrackedFiles.length) {
     first_historic_commit = 0;
   }
 
