@@ -178,7 +178,7 @@ var apiHelpers = {
     }
 
     if (commitsToRemove.length) {
-      Commits.remove ({_id : {$in : commitsToRemove}}, {$set : {invalid : true}}, {multi : true});
+      Commits.update ({_id : {$in : commitsToRemove}}, {$set : {invalid : true}}, {multi : true});
     }
 
     updates.addsLen = commitsToAdd.length;
