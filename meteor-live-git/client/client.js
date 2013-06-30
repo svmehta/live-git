@@ -33,6 +33,11 @@ Template.main.users = function() {
   var userArray = [];
 
   copies.forEach(function(copy) {
+    copy.commits = Commits.find(
+      { _id: { $in: copy.commitIds } },
+      { sort:  { timestamp: -1 }}
+    ).fetch();
+
     var user = Users.findOne({ _id: copy.userId })
     if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
 
@@ -48,13 +53,14 @@ Template.main.users = function() {
 };
 
 
-var getCommitById = function(commitId, workingCopy) {
-  var commit = Commits.findOne({ _id: commitId });
+var processCommitData = function(commit, workingCopy) {
+  // var commit = Commits.findOne({ _id: commitId });
   commit.timeago = moment.unix(commit.timestamp).fromNow();
   commit.branchName = workingCopy.branchName;
   commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
   commit.iconType = "save";
   commit.fileList = commit.files.join(", ");
+  // console.log(commit);
   return commit;
 };
 
@@ -70,8 +76,8 @@ Template.user.topItem = function() {
       iconType: "write"
     };
 
-  } else if(this.workingCopy.commitIds.length) {
-    return getCommitById(this.workingCopy.commitIds[0], this.workingCopy);
+  } else if(this.workingCopy.commits.length) {
+    return processCommitData(this.workingCopy.commits[0], this.workingCopy);
 
   } else {
     return false;
@@ -91,8 +97,8 @@ Template.user.olderItems = function() {
   var commits = [];
 
   for (var i = first_historic_commit; i < first_historic_commit + 3; i ++) {
-    if (this.workingCopy.commitIds[i]) {
-      var commit = getCommitById(this.workingCopy.commitIds[i], this.workingCopy);
+    if (this.workingCopy.commits[i]) {
+      var commit = processCommitData(this.workingCopy.commits[i], this.workingCopy);
       commits.push(commit);
     }
   }
