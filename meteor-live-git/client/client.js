@@ -85,10 +85,10 @@ Template.user.uncommittedFiles = function() {
     return result;
 
   } else if (this.workingCopy.untrackedFiles.length) {
-    this.workingCopy.untrackedFiles.forEach(function(filename) {
+    this.workingCopy.untrackedFiles.forEach(function(f) {
       result.files.push({
-        file: filename,
-        timeago: wc_timeago
+        file: f.filename,
+        timeago: moment(f.lastModified).fromNow()
       });
     });
     result.firstFile = result.files.shift();
