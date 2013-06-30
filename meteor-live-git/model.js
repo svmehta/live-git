@@ -28,7 +28,7 @@ WorkingCopies = new Meteor.Collection("workingCopies");
  * userId
  * workingCopyId
  * clientHash
- * pushedHash
+ * remoteHash
  * commit message
  * diffId
  * timestamp
