@@ -58,7 +58,7 @@ Template.main.users = function() {
       "user": user,
       "workingCopy": copy,
       "lastPushedCommit" : lastPushedCommit,
-      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
+      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase().replace (/\./g,"")).toString()
     });
 
     userArray.sort (function (a, b) {
