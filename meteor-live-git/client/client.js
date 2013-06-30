@@ -57,15 +57,18 @@ Template.main.users = function() {
     userArray.sort (function (a, b) {
       var wcA = a.workingCopy;
       var wcB = b.workingCopy;
-      console.log ('wcA', wcA)
       if (wcA.commits && wcA.commits.length && wcB.commits && wcB.commits.length) {
         return wcA.commits[0].timestamp - wcB.commits[0].timestamp;
       } else if (wcA.commits && wcA.commits.length) {
         return -1;
-      } else {
+      } else if (wcB.commits && wcB.commits.length) {
         return 1;
+      } else if (a.user.email > b.user.email) {
+        return 1;
+      } else {
+        return -1;
       }
-    })
+    });
 
   });
 

@@ -92,7 +92,12 @@ Meteor.Router.add({
         $set : {
           untrackedFiles : body.untrackedFiles,
           timestamp : Date.now(),
-          fileStats : apiHelpers.getFileStats (body),
+          'fileStats.numBehind': body.numAhead,
+          'fileStats.numConflicts' : body.numConflicts,
+          'fileStats.numStaged' : body.numStaged,
+          'fileStats.numChanged' : body.numChanged,
+          'fileStats.numAhead' : body.numAhead,
+          'fileStats.numUntracked' : body.numUntracked,
           gitDiff : body.gitDiff
         }
       };
