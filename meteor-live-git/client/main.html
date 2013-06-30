@@ -1,0 +1,102 @@
+<head>
+  <meta charset="utf-8">
+  <title>Git Dashboard</title>
+
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,100,600,900' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Goudy+Bookletter+1911' rel='stylesheet' type='text/css'>
+</head>
+
+<body>{{> main}}</body>
+
+
+<template name="main">
+  <div class="container">
+    <h1>{{repository.name}}</h1>
+
+    {{#each users}}
+      {{> user}}
+    {{/each}}
+  </div>
+
+  <!--
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+ -->
+</template>
+
+
+<template name="user">
+  <div class="update-block">
+    <div class="row">
+      <div class="span2">
+        <div class="profile-container">
+          <img src="{{gravatar}}" class="profile-image">
+        </div>
+      </div>
+      <div class="span9">
+        <div class="featured">
+          <div class="branch">
+            git-dashboard
+          </div>
+          <div class="main-block">
+            <div class="action-icon save"></div>
+            <div class="main quote">
+              <div class="item">
+                Here is my commit comment.
+                <div class="time-stamp">
+                  3 seconds ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="history">
+          <div class="item">
+            <div class="action-icon save"></div>
+            <div class="branch">
+              git-dashboard
+            </div>
+            <div class="update-text quote">
+              Updated responsive styles for iPhone
+            </div>
+            <div class="time-stamp">
+              3 seconds ago
+            </div>
+            <div class="updated-files">
+              live-git.nginx.conf, model.js, git_helpers.py
+            </div>
+          </div>
+          <div class="item">
+            <div class="action-icon pull"></div>
+            <div class="branch">
+              git-dashboard
+            </div>
+            <div class="update-text">
+              Andrew pulled
+            </div>
+            <div class="time-stamp">
+              38 minutes ago
+            </div>
+          </div>
+          <div class="item">
+            <div class="action-icon push"></div>
+            <div class="branch behind">
+              live-git-17
+            </div>
+            <div class="update-text quote">
+              Fixed button bug.
+            </div>
+            <div class="time-stamp">
+              22 hours ago
+            </div>
+          </div>
+        </div>
+        <div class="more">
+          <div class="more-divider"></div>
+          <div class="more-text">
+            Show more
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
