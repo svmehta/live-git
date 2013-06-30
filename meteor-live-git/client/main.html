@@ -38,12 +38,6 @@
         </div>
       </div>
       <div class="span9">
-        {{#with allDone}}
-            <div class="all-done-message behind-number">
-                {{message}}     
-            </div>
-        {{/with}}
-
         {{#with uncommittedFiles}}
           {{> new-files-row}}
         {{/with}}
@@ -119,6 +113,13 @@
     {{#if this.numBehind}}
       <div class="behind-number">{{this.numBehind}} behind</div>
     {{/if}}
+    {{#if this.allDone}}
+        <div class="all-done-message behind-number">
+            {{message}}     
+        </div>
+    {{/if}}
+
+
     <div class="main-block">
       <div class="action-icon {{this.iconType}}"></div>
       <div class="main quote">
