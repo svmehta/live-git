@@ -20,7 +20,6 @@ Template.main.repository = function() {
 
     return repo;
   } else if (!Session.get("searchedForRepo")) {
-      console.log("loading")
     return { name: "Loading..." };
   } else {
     return { name: "Error: invalid repository ID" };
@@ -77,13 +76,13 @@ Template.main.users = function() {
 };
 
 
-var processCommitData = function(commit, workingCopy) {
+var processCommitData = function(commit, workingCopy, isDone) {
   // var commit = Commits.findOne({ _id: commitId });
   commit.timeago = moment.unix(commit.timestamp).fromNow();
   commit.branchName = workingCopy.branchName;
   commit.numBehind = workingCopy.fileStats.numBehind;
   commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
-  commit.iconType = "save";
+  commit.iconType = isDone ? "push" : "save";
   // console.log(commit);
   return commit;
 };
