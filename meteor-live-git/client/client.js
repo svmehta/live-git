@@ -41,6 +41,12 @@ Template.main.users = function() {
     var user = Users.findOne({ _id: copy.userId })
     if (!user) { console.log("Couldn't load user with ID", copy.userId, "from working copy", copy._id); }
 
+    userArray.push({
+      "user": user,
+      "workingCopy": copy,
+      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
+    });
+
     userArray.sort (function (a, b) {
       var wcA = a.workingCopies;
       var wcB = b.workingCopies;
@@ -54,11 +60,6 @@ Template.main.users = function() {
       }
     })
 
-    userArray.push({
-      "user": user,
-      "workingCopy": copy,
-      "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
-    });
   });
 
   console.log(userArray);
