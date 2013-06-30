@@ -12,7 +12,9 @@
 
 <template name="main">
   <div class="container">
-    <h1>{{repository.name}}</h1>
+    {{#with repository}}
+      <h1>{{name}}</h1>
+    {{/with}}
 
     {{#each users}}
       {{> user}}
@@ -27,7 +29,7 @@
     <div class="row">
       <div class="span2">
         <div class="profile-container">
-          <img src="{{gravatar}}" class="profile-image">
+          <img src="http://www.gravatar.com/avatar/{{this.gravatarHash}}" class="profile-image">
         </div>
       </div>
       <div class="span9">
