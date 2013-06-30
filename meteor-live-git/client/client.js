@@ -1,3 +1,5 @@
+Session.set("searchedForRepo", false);
+
 // Main template
 Template.main.showRepository = function() {
   return (window.location.pathname.length > 15);
@@ -14,7 +16,12 @@ Template.main.repository = function() {
       repo.name = matches[1];
     }
 
+    Session.set("searchedForRepo", true);
+
     return repo;
+  } else if (!Session.get("searchedForRepo")) {
+      console.log("loading")
+    return { name: "Loading..." };
   } else {
     return { name: "Error: invalid repository ID" };
   }
@@ -46,6 +53,23 @@ Template.main.users = function() {
       "workingCopy": copy,
       "gravatarHash": CryptoJS.MD5(user.email.trim().toLowerCase()).toString()
     });
+
+    userArray.sort (function (a, b) {
+      var wcA = a.workingCopy;
+      var wcB = b.workingCopy;
+      if (wcA.commits && wcA.commits.length && wcB.commits && wcB.commits.length) {
+        return wcA.commits[0].timestamp - wcB.commits[0].timestamp;
+      } else if (wcA.commits && wcA.commits.length) {
+        return -1;
+      } else if (wcB.commits && wcB.commits.length) {
+        return 1;
+      } else if (a.user.email > b.user.email) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
   });
 
   console.log(userArray);
