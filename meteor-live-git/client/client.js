@@ -47,14 +47,55 @@ Template.main.users = function() {
   return userArray;
 };
 
-// Template.main.repository = { name: "My Awesome Repo" }
-//
-// Template.main.users = [
-//   {
-//     name: "img/hourann.jpg", email: "hourannb@dview.net"
-//   }
-// ];
-//
-// Template.user.gravatar = function() {
-//   return this.name;
-// }
+
+var getCommitById = function(commitId, workingCopy) {
+  var commit = Commits.findOne({ _id: commitId });
+  commit.timeago = moment.unix(commit.timestamp).fromNow();
+  commit.branchName = workingCopy.branchName;
+  commit.branchStyle = workingCopy.fileStats.numBehind > 0 ? "behind" : "";
+  commit.iconType = "save";
+  commit.fileList = commit.files.join(", ");
+  return commit;
+};
+
+
+Template.user.topItem = function() {
+  if (!this.workingCopy) { console.log("No working copy to inspect!"); }
+
+  if (this.workingCopy.untrackedFiles.length) {
+    return {
+      files: this.workingCopy.untrackedFiles,
+      branchStyle: this.workingCopy.fileStats.numBehind > 0 ? "behind" : "",
+      branchName: this.workingCopy.branchName,
+      iconType: "write"
+    };
+
+  } else if(this.workingCopy.commitIds.length) {
+    return getCommitById(this.workingCopy.commitIds[0], this.workingCopy);
+
+  } else {
+    return false;
+  }
+};
+
+
+Template.user.olderItems = function() {
+  if (!this.workingCopy) { console.log("No working copy to inspect!"); }
+
+  var first_historic_commit = 1;
+
+  if (this.workingCopy.untrackedFiles.length) {
+    first_historic_commit = 0;
+  }
+
+  var commits = [];
+
+  for (var i = first_historic_commit; i < first_historic_commit + 3; i ++) {
+    if (this.workingCopy.commitIds[i]) {
+      var commit = getCommitById(this.workingCopy.commitIds[i], this.workingCopy);
+      commits.push(commit);
+    }
+  }
+
+  return commits;
+};
