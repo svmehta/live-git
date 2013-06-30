@@ -92,8 +92,9 @@ def get_working_copy(params, dirpath):
     file_stats = gitstatus.get_statistics(dirpath)
 
     # Unstaged changes for added files (aka git diff)
-    current_diffs_raw = repo.index.diff(None, create_patch=True)
-    current_diffs = _difflist_to_dictlist(current_diffs_raw)
+    # current_diffs_raw = repo.index.diff(None, create_patch=True)
+    # current_diffs = _difflist_to_dictlist(current_diffs_raw)
+    current_diffs = []
 
     working_copy = {
             "computerId": params["computerId"],
