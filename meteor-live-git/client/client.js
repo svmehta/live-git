@@ -1,3 +1,5 @@
+Session.set("searchedForRepo", false);
+
 // Main template
 Template.main.showRepository = function() {
   return (window.location.pathname.length > 15);
@@ -13,8 +15,13 @@ Template.main.repository = function() {
       var matches = /\/([^\/]+?)(?:.git)?$/.exec(repo.url);
       repo.name = matches[1];
     }
+    
+    Session.set("searchedForRepo", true);
 
     return repo;
+  } else if (!Session.get("searchedForRepo")) {
+      console.log("loading")
+    return { name: "Loading..." };   
   } else {
     return { name: "Error: invalid repository ID" };
   }
