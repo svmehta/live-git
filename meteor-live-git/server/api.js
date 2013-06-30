@@ -1,7 +1,7 @@
 Meteor.Router.add({
 
   '/bootstrap' : function () {
-    var body = JSON.parse(this.request.body);
+    var body = this.request.body;
 
     var remoteUrl = body.remoteUrl;
     if (!remoteUrl) {
@@ -43,7 +43,7 @@ Meteor.Router.add({
    * update the state of the workingCopy
    */
   '/update' : function() {
-    var body = JSON.parse(this.request.body);
+    var body = this.request.body;
     var clientCommits = body.unpushedCommits;
 
     if (!body.computerId) {
