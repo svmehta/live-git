@@ -17,7 +17,7 @@ This will create the directory `~/.gitdashboard`, install everything inside a vi
 
 * Currently each branch you create locally is assumed to be tracking a remote branch of the same name located at "origin"
 * We run git fetch from the command line frequently to compare your current repository status to the remote, to avoid prompts for username and password it's best to set up your remote to fetch via ssh
-* There is no security
+* There is not a lot of security at the moment. The url generated for the project is publicly accessible by anyone with the same url.
 
 ## Running the server
 
